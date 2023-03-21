@@ -88,3 +88,6 @@ public class GenericArrayUserType<T extends Serializable> implements UserType {
         return new int[]{Types.ARRAY};
     }
 }
+===================
+@Type(type = "com.example.mytastyserver.util.GenericArrayUserType")
+private String[] tags;
