@@ -1,344 +1,324 @@
 {
-   "avgRate":0,
-   "configId":0,
-   "currentLevel":0,
-   "currentStage":0,
-   "currentStatus":"string",
-   "defaultScore":0,
-   "dirOrADVzId":"string",
-   "edVzId":"string",
-   "effortId":0,
-   "eventId":0,
-   "fundAmount":0,
-   "fundStatus":"string",
-   "garageUser":{
-      "email":"string",
-      "empId":"string",
-      "fName":"string",
-      "lName":"string",
-      "name":"string",
-      "role":"string",
-      "status":"string",
-      "vzId":"string"
-   },
-   "hackTeams":{
-      "demoLink":"string",
-      "eventId":0,
-      "hackTeamMembers":[
-         {
-            "garageUser":{
-               "email":"string",
-               "empId":"string",
-               "fName":"string",
-               "lName":"string",
-               "name":"string",
-               "role":"string",
-               "status":"string",
-               "updatedBy":"string",
-               "vzId":"string"
-            },
-            "id":0,
-            "memberVzId":"string",
-            "teamId":0
-         }
-      ],
-      "name":"string",
-      "status":"string",
-      "teamId":0
-   },
-   "ideaBeneficiaries":"string",
-   "ideaBenefits":"string",
-   "ideaDescription":"string",
-   "ideaId":0,
-   "ideaOwner":"string",
-   "ideaTitle":"string",
-   "isStartupEnabled":0,
-   "labType":"string",
-   "lastStage":0,
-   "lifecycleId":0,
-   "quantifiedBenefitsDollars":0,
-   "quantifiedBenefitsHours":0,
-   "ranking":0,
-   "ratingScore":0,
-   "sharktankAttachments":[
+  "avgRate": 0,
+  "configId": 0,
+  "currentLevel": 0,
+  "currentStage": 0,
+  "currentStatus": "string",
+  "defaultScore": 0,
+  "dirOrADVzId": "string",
+  "edVzId": "string",
+  "effortId": 0,
+  "eventId": 0,
+  "fundAmount": 0,
+  "fundStatus": "string",
+  "garageUser": {
+    "email": "string",
+    "empId": "string",
+    "fName": "string",
+    "lName": "string",
+    "name": "string",
+    "role": "string",
+    "status": "string",
+    "vzId": "string"
+  },
+  "hackTeams": {
+    "demoLink": "string",
+    "eventId": 0,
+    "hackTeamMembers": [
       {
-         "attachmentId":0,
-         "attachmentName":"string",
-         "garageUser":{
-            "email":"string",
-            "empId":"string",
-            "fName":"string",
-            "lName":"string",
-            "name":"string",
-            "role":"string",
-            "status":"string",
-            "vzId":"string"
-         },
-         "id":0,
-         "ideaId":0,
-         "lifecycleId":0,
-         "uploadedBy":"string"
+        "garageUser": {
+          "email": "string",
+          "empId": "string",
+          "fName": "string",
+          "lName": "string",
+          "name": "string",
+          "role": "string",
+          "status": "string",
+          "vzId": "string"
+        },
+        "id": 0,
+        "memberVzId": "string",
+        "teamId": 0
       }
-   ],
-   "sharktankDirOrAssociateDirectors":{
-      "createdBy":"string",
-      "edVzId":"string",
-      "executiveDirectorDetail":{
-         "email":"string",
-         "empId":"string",
-         "fName":"string",
-         "lName":"string",
-         "name":"string",
-         "role":"string",
-         "status":"string",
-         "vzId":"string"
+    ],
+    "name": "string",
+    "status": "string",
+    "teamId": 0
+  },
+  "ideaBeneficiaries": "string",
+  "ideaBenefits": "string",
+  "ideaDescription": "string",
+  "ideaId": 0,
+  "ideaOwner": "string",
+  "ideaTitle": "string",
+  "isStartupEnabled": 0,
+  "labType": "string",
+  "lastStage": 0,
+  "lifecycleId": 0,
+  "quantifiedBenefitsDollars": 0,
+  "quantifiedBenefitsHours": 0,
+  "ranking": 0,
+  "ratingScore": 0,
+  "sharktankAttachments": [
+    {
+      "attachmentId": 0,
+      "attachmentName": "string",
+      "garageUser": {
+        "email": "string",
+        "empId": "string",
+        "fName": "string",
+        "lName": "string",
+        "name": "string",
+        "role": "string",
+        "status": "string",
+        "vzId": "string"
       },
-      "garageUser":{
-         "email":"string",
-         "empId":"string",
-         "fName":"string",
-         "lName":"string",
-         "name":"string",
-         "role":"string",
-         "status":"string",
-         "vzId":"string"
+      "id": 0,
+      "ideaId": 0,
+      "lifecycleId": 0,
+      "uploadedBy": "string"
+    }
+  ],
+  "sharktankDirOrAssociateDirectors": {
+    "edVzId": "string",
+    "executiveDirectorDetail": {
+      "email": "string",
+      "empId": "string",
+      "fName": "string",
+      "lName": "string",
+      "name": "string",
+      "role": "string",
+      "status": "string",
+      "vzId": "string"
+    },
+    "garageUser": {
+      "email": "string",
+      "empId": "string",
+      "fName": "string",
+      "lName": "string",
+      "name": "string",
+      "role": "string",
+      "status": "string",
+      "vzId": "string"
+    },
+    "id": 0,
+    "vzId": "string"
+  },
+  "sharktankExecutiveDirectors": {
+    "garageUser": {
+      "email": "string",
+      "empId": "string",
+      "fName": "string",
+      "lName": "string",
+      "name": "string",
+      "role": "string",
+      "status": "string",
+      "vzId": "string"
+    },
+    "id": 0,
+    "vzId": "string"
+  },
+  "sharktankGroupDetails": [
+    {
+      "groupId": 0,
+      "ideaGroupDetailsId": 0,
+      "ideaId": 0,
+      "updatedBy": "string"
+    }
+  ],
+  "sharktankHashtagDetails": [
+    {
+      "hashtag": "string",
+      "hashtagDetailsId": 0,
+      "ideaId": 0,
+      "updatedBy": "string"
+    }
+  ],
+  "sharktankHyperlinks": [
+    {
+      "hyperlink": "string",
+      "ideaId": 0,
+      "lifecycleId": 0,
+      "linkId": 0
+    }
+  ],
+  "sharktankIdeaUserRating": [
+    {
+      "empId": "string",
+      "garageUser": {
+        "email": "string",
+        "empId": "string",
+        "fName": "string",
+        "lName": "string",
+        "name": "string",
+        "role": "string",
+        "status": "string",
+        "vzId": "string"
       },
-      "id":0,
-      "updatedBy":"string",
-      "vzId":"string"
-   },
-   "sharktankExecutiveDirectors":{
-      "email":"string",
-      "empId":"string",
-      "fName":"string",
-      "lName":"string",
-      "name":"string",
-      "role":"string",
-      "status":"string",
-      "vzId":"string"
-   },
-   {
-      "id":0,
-      "vzId":"string"
-   },
-   "sharktankGroupDetails":[
-      {
-         "groupId":0,
-         "ideaGroupDetailsId":0,
-         "ideaId":0
-      }
-   ],
-   "sharktankHashtagDetails":[
-      {
-         "hashtag":"string",
-         "hashtagDetailsId":0,
-         "ideaId":0
-      }
-   ],
-   "sharktankHyperlinks":[
-      {
-         "hyperlink":"string",
-         "ideaId":0,
-         "lifecycleId":0,
-         "linkId":0
-      }
-   ],
-   "sharktankIdeaUserRating":[
-      {
-         "empId":"string",
-         "garageUser":{
-            "email":"string",
-            "empId":"string",
-            "fName":"string",
-            "lName":"string",
-            "name":"string",
-            "role":"string",
-            "status":"string",
-            "vzId":"string"
-         },
-         "ideaId":0,
-         "rate":0,
-         "ratingId":0,
-         "vzId":"string"
-      }
-   ],
-   "sharktankMembersDetails":[
-      {
-         "createdBy":"string",
-         "empId":"string",
-         "garageUser":{
-            "email":"string",
-            "empId":"string",
-            "fName":"string",
-            "lName":"string",
-            "name":"string",
-            "role":"string",
-            "status":"string",
-            "vzId":"string"
-         },
-         "ideaId":0,
-         "membersDetailsId":0,
-         "name":"string",
-         "updatedBy":"string",
-         "vzId":"string"
-      }
-   ],
-   "sharktankMentorsDetails":[
-      {
-         "empId":"string",
-         "garageUser":{
-            "email":"string",
-            "empId":"string",
-            "fName":"string",
-            "lName":"string",
-            "name":"string",
-            "role":"string",
-            "status":"string",
-            "vzId":"string"
-         },
-         "ideaId":0,
-         "mentorDetailsId":0,
-         "name":"string",
-         "updatedBy":"string",
-         "vzId":"string"
-      }
-   ],
-   "sharktankStartUpDetails":[
-      {
-         "ideaId":0,
-         "sharktankStartup":{
-            "createdBy":"string",
-            "startupId":0,
-            "startupName":"string"
-         },
-         "startupDetailsId":0,
-         "startupId":0
-      }
-   ],
-   "sharktankStatus":[
-      {
-         "approver":"string",
-         "garageUser":{
-            "email":"string",
-            "empId":"string",
-            "fName":"string",
-            "lName":"string",
-            "name":"string",
-            "role":"string",
-            "status":"string",
-            "vzId":"string"
-         },
-         "ideaId":0,
-         "lifecycleId":0,
-         "notes":"string",
-         "pocVzIds":"string",
-         "sharktankStage":{
-            "createdBy":"string",
-            "description":"string",
-            "level":0,
-            "overallScore":0,
-            "stageId":0,
-            "stageName":"string",
-            "stageType":"string",
-            "updatedBy":"string",
-            "uploadStage":true
-         },
-         "stageId":0,
-         "status":"string",
-         "statusId":0
-      }
-   ],
-   "sharktankTechstackDetails":[
-      {
-         "ideaId":0,
-         "techstackDetailsId":0,
-         "techstackName":"string"
-      }
-   ],
-   "sharktankTypeDetails":[
-      {
-         "ideaId":0,
-         "ideaTypeDetailsId":0,
-         "ideaTypeId":0
-      }
-   ],
-   "startupDetails":[
-      {
-         "activeP1P2Usecase":"string",
-         "config_id":1,
-         "connectRequired":"string",
-         "connectStatus":"string",
-         "contextForBetterUnderstanding":"string",
-         "createdBy":"string",
-         "current_stage":1,
-         "financialResources":"string",
-         "fundingAmount":"string",
-         "fundingRating":"string",
-         "fundingStage":"string",
-         "id":1,
-         "ideaId":113,
-         "isStartUpRelevant":"string",
-         "noOfDaysFeedbackPending":"string",
-         "noOfDaysFirstConnectPending":"string",
-         "noOfDaysFirstInteractionMade":"string",
-         "noOfDaysProvideFeedback":"string",
-         "nonFinancialResources":"string",
-         "observationsOfPartnership":"string",
-         "portfolioTeamFeedback":"string",
-         "previousWorkWithStartup":"string",
-         "problemToSolve":"string",
-         "stakeholderBuyIn":"string",
-         "startupId":1,
-         "startupInfo":{
-            "activeStartUp":"string",
-            "awardsRecognition":"string",
-            "awardsRecognitionRating":"string",
-            "clientele":"string",
-            "clienteleRating":"string",
-            "createdBy":"string",
-            "description":"string",
-            "foundedYear":1,
-            "founderInformation":"string",
-            "foundingTeamRating":"string",
-            "hqCity":"string",
-            "id":1,
-            "isStartupCuratedIn2121":"string",
-            "presenceInUSMarket":"string",
-            "startUpName":"string",
-            "tags":"string",
-            "teamSize":1,
-            "teamSizeRating":"string",
-            "updatedBy":"string",
-            "website":"string",
-            "zinnovComments":"string",
-            "zinnovScoring":1
-         },
-         "startupPrerequisities":"string",
-         "upcoming_stage":1,
-         "updatedBy":"string",
-         "useCaseID":"string",
-         "useCasePriority":"string",
-         "useCaseStatus":"string",
-         "usecaseImportance":"string",
-         "usecaseResolutionUrgencyInfo":"string"
-      }
-   ],
-   "systemsInvolved":"string",
-   "teamId":0,
-   "totalScore":0,
-   "totalStageScore":0,
-   "upcomingStage":0,
-   "updatedBy":"string",
-   "updatedDateTime":{
-      "date":0,
-      "day":0,
-      "hours":0,
-      "minutes":0,
-      "month":0,
-      "nanos":0,
-      "seconds":0,
-      "time":0,
-      "timezoneOffset":0,
-      "year":0
-   }
+      "ideaId": 0,
+      "rate": 0,
+      "ratingId": 0,
+      "vzId": "string"
+    }
+  ],
+  "sharktankMembersDetails": [
+    {
+      "empId": "string",
+      "garageUser": {
+        "email": "string",
+        "empId": "string",
+        "fName": "string",
+        "lName": "string",
+        "name": "string",
+        "role": "string",
+        "status": "string",
+        "vzId": "string"
+      },
+      "ideaId": 0,
+      "membersDetailsId": 0,
+      "name": "string",
+      "vzId": "string"
+    }
+  ],
+  "sharktankMentorsDetails": [
+    {
+      "empId": "string",
+      "garageUser": {
+        "email": "string",
+        "empId": "string",
+        "fName": "string",
+        "lName": "string",
+        "name": "string",
+        "role": "string",
+        "status": "string",
+        "vzId": "string"
+      },
+      "ideaId": 0,
+      "mentorDetailsId": 0,
+      "name": "string",
+      "vzId": "string"
+    }
+  ],
+  "sharktankStartUpDetails": [
+    {
+      "ideaId": 0,
+      "sharktankStartup": {
+        "startupId": 0,
+        "startupName": "string",
+        "updatedBy": "string"
+      },
+      "startupDetailsId": 0,
+      "startupId": 0,
+      "updatedBy": "string"
+    }
+  ],
+  "sharktankStatus": [
+    {
+      "approver": "string",
+      "garageUser": {
+        "email": "string",
+        "empId": "string",
+        "fName": "string",
+        "lName": "string",
+        "name": "string",
+        "role": "string",
+        "status": "string",
+        "vzId": "string"
+      },
+      "ideaId": 0,
+      "lifecycleId": 0,
+      "notes": "string",
+      "pocVzIds": "string",
+      "sharktankStage": {
+        "description": "string",
+        "level": 0,
+        "overallScore": 0,
+        "stageId": 0,
+        "stageName": "string",
+        "stageType": "string",
+        "uploadStage": true
+      },
+      "stageId": 0,
+      "status": "string",
+      "statusId": 0
+    }
+  ],
+  "sharktankTechstackDetails": [
+    {
+      "ideaId": 0,
+      "techstackDetailsId": 0,
+      "techstackName": "string",
+      "updatedBy": "string"
+    }
+  ],
+  "sharktankTypeDetails": [
+    {
+      "ideaId": 0,
+      "ideaTypeDetailsId": 0,
+      "ideaTypeId": 0,
+      "updatedBy": "string"
+    }
+  ],
+  "startupDetails": [
+    {
+      "activeP1P2Usecase": "string",
+      "config_id": 0,
+      "connectRequired": "string",
+      "connectStatus": "string",
+      "contextForBetterUnderstanding": "string",
+      "current_stage": 0,
+      "financialResources": "string",
+      "fundingAmount": "string",
+      "fundingRating": "string",
+      "fundingStage": "string",
+      "id": 0,
+      "ideaId": 0,
+      "isStartUpRelevant": "string",
+      "noOfDaysFeedbackPending": "string",
+      "noOfDaysFirstConnectPending": "string",
+      "noOfDaysFirstInteractionMade": "string",
+      "noOfDaysProvideFeedback": "string",
+      "nonFinancialResources": "string",
+      "observationsOfPartnership": "string",
+      "portfolioTeamFeedback": "string",
+      "previousWorkWithStartup": "string",
+      "problemToSolve": "string",
+      "stakeholderBuyIn": "string",
+      "startupId": 0,
+      "startupInfo": {
+        "activeStartUp": "string",
+        "awardsRecognition": "string",
+        "awardsRecognitionRating": "string",
+        "clientele": "string",
+        "clienteleRating": "string",
+        "description": "string",
+        "foundedYear": 0,
+        "founderInformation": "string",
+        "foundingTeamRating": "string",
+        "hqCity": "string",
+        "id": 0,
+        "isStartupCuratedIn2020": "string",
+        "presenceInUSMarket": "string",
+        "startUpName": "string",
+        "tags": "string",
+        "teamSize": 0,
+        "teamSizeRating": "string",
+        "website": "string",
+        "zinnovComments": "string",
+        "zinnovScoring": 0
+      },
+      "startupPrerequisities": "string",
+      "upcoming_stage": 0,
+      "useCaseID": "string",
+      "useCasePriority": "string",
+      "useCaseStatus": "string",
+      "usecaseImportance": "string",
+      "usecaseResolutionUrgencyInfo": "string"
+    }
+  ],
+  "systemsInvolved": "string",
+  "teamId": 0,
+  "totalScore": 0,
+  "totalStageScore": 0,
+  "upcomingStage": 0
 }
