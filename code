@@ -1,3 +1,68 @@
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.slf4j.Logger;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+public class YourServiceTest {
+
+    @InjectMocks
+    private YourService yourService;
+
+    @Mock
+    private EmailMessageExtractionRepository emailMessageExtractionRepository;
+
+    @Mock
+    private EmailMessageTPMRequestRepository emailMessageTPMRequestRepository;
+
+    @Mock
+    private Logger logger;
+
+    @Test
+    public void testGetGlobalSearchWithValidData() {
+        // Arrange
+        String globalId = "123";
+        UUID uuid = UUID.randomUUID();
+
+        List<String> referenceIdResult = new ArrayList<>();
+        referenceIdResult.add("Reference1");
+        List<String> requestIdResult = new ArrayList<>();
+        requestIdResult.add("Request1");
+
+        when(emailMessageExtractionRepository.findByReferenceId(globalId)).thenReturn(referenceIdResult);
+        when(emailMessageTPMRequestRepository.findByRequestIdPartialMatch(globalId)).thenReturn(requestIdResult);
+
+        // Act
+        GlobalSearchResponse response = yourService.getGlobalSearch(globalId, uuid);
+
+        // Assert
+        assertNotNull(response);
+        assertEquals(referenceIdResult, response.getReference());
+        assertEquals(requestIdResult, response.getRequestId());
+    }
+
+    @Test
+    public void testGetGlobalSearchWithException() {
+        // Arrange
+        String globalId = "123";
+        UUID uuid = UUID.randomUUID();
+
+        when(emailMessageExtractionRepository.findByReferenceId(globalId)).thenThrow(new RuntimeException("Simulated Exception"));
+
+        // Act
+        GlobalSearchResponse response = yourService.getGlobalSearch(globalId, uuid);
+
+        // Assert
+        assertNull(response);
+    }
+}
+
+---
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
