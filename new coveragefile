@@ -70,3 +70,76 @@ public class YourControllerTest {
     }
 }
 
+--------------------------
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
+
+import java.util.Collections;
+import java.util.UUID;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+@WebMvcTest(YourController.class) // Replace with your actual controller class
+@AutoConfigureMockMvc
+public class YourControllerTest {
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @MockBean
+    private EmailMessageExtractionService emailMessageExtractionService; // Replace with your actual service class
+
+    @Test
+    public void testGlobalSearchSuccess() throws Exception {
+        // Arrange
+        String id = "yourId";
+        UUID uuid = UUID.randomUUID();
+        GlobalSearchResponse response = new GlobalSearchResponse();
+        response.setReference(Collections.singletonList("ReferenceValue"));
+        response.setRequestId(Collections.singletonList("RequestIdValue"));
+
+        Mockito.when(emailMessageExtractionService.getGlobalSearch(eq(id), any(UUID.class)))
+                .thenReturn(response);
+
+        // Act
+        ResultActions result = mockMvc.perform(get("/email-messages/globalSearch/{globalId}", id)
+                .header("UUID", uuid.toString())
+                .contentType(MediaType.APPLICATION_JSON));
+
+        // Assert
+        result.andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.reference[0]").value("ReferenceValue"))
+                .andExpect(jsonPath("$.requestId[0]").value("RequestIdValue"));
+    }
+
+    @Test
+    public void testGlobalSearchNoContent() throws Exception {
+        // Arrange
+        String id = "yourId";
+        UUID uuid = UUID.randomUUID();
+        GlobalSearchResponse response = new GlobalSearchResponse();
+
+        Mockito.when(emailMessageExtractionService.getGlobalSearch(eq(id), any(UUID.class)))
+                .thenReturn(response);
+
+        // Act
+        ResultActions result = mockMvc.perform(get("/email-messages/globalSearch/{globalId}", id)
+                .header("UUID", uuid.toString())
+                .contentType(MediaType.APPLICATION_JSON));
+
+        // Assert
+        result.andExpect(status().isNoContent());
+    }
+}
+
