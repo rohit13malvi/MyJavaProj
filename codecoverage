@@ -1,1 +1,42 @@
-gitlab
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+import java.util.Optional;
+
+class ControllerTest {
+
+    @Test
+    void globalSearchTest() {
+        // Create a mock of the EmailMessageExtractionService
+        EmailMessageExtractionService emailMessageExtractionService = Mockito.mock(EmailMessageExtractionService.class);
+
+        // Create an instance of the Controller and inject the mock service
+        Controller controller = new Controller(emailMessageExtractionService);
+
+        // Define the expected response when getGlobalSearch is called on the mock service
+        GlobalsearchResponse expectedResponse = new GlobalsearchResponse();
+        List<String> expectedStrings = new ArrayList<>();
+        expectedStrings.add("String1");
+        expectedResponse.setStrings(expectedStrings);
+        List<Integer> expectedIntegers = new ArrayList<>();
+        expectedIntegers.add(1);
+        expectedResponse.setIntegers(expectedIntegers);
+        
+        // Mock the behavior of the emailMessageExtractionService.getGlobalSearch method
+        Mockito.when(emailMessageExtractionService.getGlobalSearch(Mockito.anyString(), Mockito.any(UUID.class)))
+               .thenReturn(expectedResponse);
+
+        // Call the globalSearch method
+        ResponseEntity<GlobalsearchResponse> responseEntity = controller.globalSearch("idValue", UUID.randomUUID());
+
+        // Assert the response
+        assert responseEntity.getStatusCode() == HttpStatus.OK;
+        assert responseEntity.getBody() != null;
+        assert responseEntity.getBody().getStrings().contains("String1");
+        assert responseEntity.getBody().getIntegers().contains(1);
+    }
+}
