@@ -39,4 +39,39 @@ class ControllerTest {
         assert responseEntity.getBody().getStrings().contains("String1");
         assert responseEntity.getBody().getIntegers().contains(1);
     }
+
+
+---------------------
+@Test
+public void testGlobalSearchWithValidInput() {
+    // Arrange
+    EmailMessageExtractionService emailService = Mockito.mock(EmailMessageExtractionService.class);
+    Controller controller = new Controller(emailService);
+    GlobalsearchResponse expectedResponse = new GlobalsearchResponse();
+    Mockito.when(emailService.getGlobalSearch(Mockito.anyString(), Mockito.any(UUID.class)))
+           .thenReturn(expectedResponse);
+
+    // Act
+    ResponseEntity<GlobalsearchResponse> responseEntity = controller.globalSearch("idValue", UUID.randomUUID());
+
+    // Assert
+    Assert.assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+    Assert.assertNotNull(responseEntity.getBody());
 }
+
+@Test
+public void testGlobalSearchWithException() {
+    // Arrange
+    EmailMessageExtractionService emailService = Mockito.mock(EmailMessageExtractionService.class);
+    Controller controller = new Controller(emailService);
+    Mockito.when(emailService.getGlobalSearch(Mockito.anyString(), Mockito.any(UUID.class)))
+           .thenThrow(new RuntimeException("Simulated exception"));
+
+    // Act
+    ResponseEntity<GlobalsearchResponse> responseEntity = controller.globalSearch("idValue", UUID.randomUUID());
+
+    // Assert
+    Assert.assertEquals(HttpStatus.NO_CONTENT, responseEntity.getStatusCode());
+    Assert.assertNotNull(responseEntity.getBody());
+}
+
