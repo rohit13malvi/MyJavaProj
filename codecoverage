@@ -126,3 +126,37 @@ public List<String> findByReferenceId(@Param("id") String id);
 @Query(value = "select request_id from ucmcmt.email_message_tpm_request where cast(request_id as text) like" +
             " :id%", nativeQuery = true)
     public List<String> findByRequestIdPartialMatch(@Param("id") String id);
+-----
+package com.verizon.ucm.interactionmanagement.response;
+
+import java.util.List;
+
+public class GlobalSearchResponse {
+private List<String> reference;
+private List<String> requestId;
+
+    public List<String> getReference() {
+        return reference;
+    }
+
+    public void setReference(List<String> reference) {
+        this.reference = reference;
+    }
+
+    public List<String> getRequestId() {
+        return requestId;
+    }
+
+    public void setRequestId(List<String> requestId) {
+        this.requestId = requestId;
+    }
+
+    @Override
+    public String toString() {
+        return "GlobalSearchResponse{" +
+                "reference=" + reference +
+                ", requestId=" + requestId +
+                '}';
+    }
+}
+
