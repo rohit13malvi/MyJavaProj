@@ -1,3 +1,105 @@
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+import org.slf4j.Logger;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
+public class YourControllerImplTest {
+
+    @InjectMocks
+    private YourControllerImpl yourController;
+
+    @Mock
+    private EmailMessageExtractionRepository emailMessageExtractionRepository;
+
+    @Mock
+    private EmailMessageTPMRequestRepository emailMessageTPMRequestRepository;
+
+    @Mock
+    private Logger logger;
+
+    @BeforeEach
+    public void setUp() {
+        MockitoAnnotations.initMocks(this);
+    }
+
+    @Test
+    public void testGlobalSearchWithValidData() {
+        // Arrange
+        String globalId = "123";
+        UUID uuid = UUID.randomUUID();
+
+        List<String> referenceIdResult = new ArrayList<>();
+        referenceIdResult.add("Reference1");
+        List<String> requestIdResult = new ArrayList<>();
+        requestIdResult.add("Request1");
+
+        when(emailMessageExtractionRepository.findByReferenceId(globalId)).thenReturn(referenceIdResult);
+        when(emailMessageTPMRequestRepository.findByRequestIdPartialMatch(globalId)).thenReturn(requestIdResult);
+
+        // Act
+        ResponseEntity<GlobalSearchResponse> responseEntity = yourController.globalSearch(globalId, uuid);
+
+        // Assert
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        GlobalSearchResponse response = responseEntity.getBody();
+        assertNotNull(response);
+        assertEquals(referenceIdResult, response.getReference());
+        assertEquals(requestIdResult, response.getRequestId());
+    }
+
+    @Test
+    public void testGlobalSearchWithEmptyData() {
+        // Arrange
+        String globalId = "123";
+        UUID uuid = UUID.randomUUID();
+
+        when(emailMessageExtractionRepository.findByReferenceId(globalId)).thenReturn(new ArrayList<>());
+        when(emailMessageTPMRequestRepository.findByRequestIdPartialMatch(globalId)).thenReturn(new ArrayList<>());
+
+        // Act
+        ResponseEntity<GlobalSearchResponse> responseEntity = yourController.globalSearch(globalId, uuid);
+
+        // Assert
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        GlobalSearchResponse response = responseEntity.getBody();
+        assertNotNull(response);
+        assertTrue(response.getReference().isEmpty());
+        assertTrue(response.getRequestId().isEmpty());
+    }
+
+    @Test
+    public void testGlobalSearchWithException() {
+        // Arrange
+        String globalId = "123";
+        UUID uuid = UUID.randomUUID();
+
+        when(emailMessageExtractionRepository.findByReferenceId(globalId)).thenThrow(new RuntimeException("Simulated Exception"));
+
+        // Act
+        ResponseEntity<GlobalSearchResponse> responseEntity = yourController.globalSearch(globalId, uuid);
+
+        // Assert
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
+        assertNull(responseEntity.getBody());
+    }
+}
+---------------------------
+
+
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
