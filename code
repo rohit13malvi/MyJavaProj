@@ -1,3 +1,40 @@
+import java.util.ArrayList;
+import java.util.List;
+
+public class GlobalSearchResponseUtil {
+
+    public static GlobalSearchResponse createDummyGlobalSearchResponse() {
+        GlobalSearchResponse response = new GlobalSearchResponse();
+
+        // Create a list of reference IDs
+        List<String> referenceIds = new ArrayList<>();
+        referenceIds.add("Reference1");
+        referenceIds.add("Reference2");
+        referenceIds.add("Reference3");
+
+        // Create a list of request IDs
+        List<String> requestIds = new ArrayList<>();
+        requestIds.add("Request1");
+        requestIds.add("Request2");
+        requestIds.add("Request3");
+
+        // Set the lists in the GlobalSearchResponse object
+        response.setReference(referenceIds);
+        response.setRequestId(requestIds);
+
+        return response;
+    }
+
+    public static void main(String[] args) {
+        // Create a dummy GlobalSearchResponse object
+        GlobalSearchResponse dummyResponse = createDummyGlobalSearchResponse();
+
+        // Print the object to see the dummy data
+        System.out.println(dummyResponse);
+    }
+}
+
+========================
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
