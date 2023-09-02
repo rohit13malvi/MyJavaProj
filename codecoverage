@@ -74,4 +74,55 @@ public void testGlobalSearchWithException() {
     Assert.assertEquals(HttpStatus.NO_CONTENT, responseEntity.getStatusCode());
     Assert.assertNotNull(responseEntity.getBody());
 }
-
+--------------------------------
+@Override
+	public ResponseEntity<GlobalSearchResponse> globalSearch(String id, UUID uuid) {
+		LOGGER.info("globalSearch: Getting the request id or reference id : referenceIdOrrequestId", id, uuid);
+		GlobalSearchResponse globalSearchResponse = new GlobalSearchResponse();
+		try {
+			globalSearchResponse = emailMessageExtractionService.getGlobalSearch(id, uuid);
+		} catch (Exception exe) {
+			LOGGER.error("exception in emailMessageExtraction method where referenceIdOrrequestId =", id, "Exception =", exe, uuid);
+			return new ResponseEntity<>(globalSearchResponse, HttpStatus.NO_CONTENT);
+		}
+		if (Optional.ofNullable(globalSearchResponse).isPresent()) {
+			return new ResponseEntity<>(globalSearchResponse, HttpStatus.OK);
+		} else {
+			return new ResponseEntity<>(globalSearchResponse, HttpStatus.NO_CONTENT);
+		}
+	}
+-----------------
+ @PreAuthorize(KirkeAuthorization.USER)
+    @RequestMapping(value = "/email-messages/globalSearch/{globalId}", produces = {"application/json"}, method = RequestMethod.GET)
+    default ResponseEntity<GlobalSearchResponse> globalSearch(@ApiParam(value = "Universal search searching a reference id and request id based on input. it will display requestedId or requestId.", required = true) @Valid @PathVariable("globalId") String globalId,@RequestHeader("UUID") UUID uuid){
+        return new ResponseEntity<GlobalSearchResponse>(HttpStatus.OK);
+    }
+--------------------
+  public GlobalSearchResponse getGlobalSearch(String referenceIdOrrequestId, UUID uuid) {
+        List<String> listOfReferenceId = new ArrayList<>();
+        List<String> listOfRequestId = new ArrayList<>();
+        GlobalSearchResponse globalSearchResponse = new GlobalSearchResponse();
+        try {
+            listOfReferenceId = emailMessageExtractionRepository.findByReferenceId(referenceIdOrrequestId);
+            listOfRequestId = emailMessageTPMRequestRepository.findByRequestIdPartialMatch(referenceIdOrrequestId);
+           if(Optional.ofNullable(listOfReferenceId).isPresent()||Optional.ofNullable(listOfRequestId).isPresent()){
+            globalSearchResponse.setReference(listOfReferenceId);
+            globalSearchResponse.setRequestId(listOfRequestId);
+            }
+            LOGGER.info("global search response data =", globalSearchResponse, uuid);
+        } catch (Exception exe) {
+            LOGGER.error("getGlobalSearch: error while filtering the refrence id request id records" + exe,uuid);
+            exe.printStackTrace();
+            return null;
+        }
+        return globalSearchResponse;
+    }
+---
+@Query(value="select reference_id from ucmcmt.email_message_extraction where reference_id Like (:id%)", nativeQuery = true)
+public List<String> findByReferenceId(@Param("id") String id);
+---
+            listOfRequestId = emailMessageTPMRequestRepository.findByRequestIdPartialMatch(referenceIdOrrequestId);
+----------------------
+@Query(value = "select request_id from ucmcmt.email_message_tpm_request where cast(request_id as text) like" +
+            " :id%", nativeQuery = true)
+    public List<String> findByRequestIdPartialMatch(@Param("id") String id);
