@@ -1,3 +1,9 @@
+mockMvc.perform(get(GLOBAL_SEARCH, 1).header("uuid", UUID.randomUUID())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+        Assert.assertNotNull(contentString.contains("Successful operation"));
+------------------------
 org.mockito.exceptions.misusing.InvalidUseOfMatchersException: 
 Misplaced or misused argument matcher detected here:
 -----------------------------------------------
