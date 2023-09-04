@@ -1,3 +1,28 @@
+
+select request_id from ucmcmt.email_message_tpm_request
+ucmcmt.email_message_tpm_request
+ucmcmt.tpm_request_network_elements/*not requested*/
+select * from ucmcmt.email_message_extraction
+select reference_id from ucmcmt.email_message_extraction where 
+
+select * from ucmcmt.email_message_extraction
+select * from ucmcmt.email_message_extraction 
+ where reference_id ='92832323'
+
+select * from ucmcmt.email_message_extraction where email_message_extraction_id=140
+request_id
+select * from ucmcmt.email_message_tpm_request where request_id in (34,87) and email_message_extraction_id is not null
+
+select * from ucmcmt.email_message_tpm_request where cast(request_id as text) like '8%'
+
+select * from ucmcmt.party where id=140 where party_name = 'crown castle'
+
+select * from ucmcmt.email_messages where email_me
+
+select reference_id from ucmcmt.email_message_extraction where reference_id Like '8%'
+
+select * from ucmcmt.email_extraction_mapping
+--------------------
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.http.HttpStatus;
