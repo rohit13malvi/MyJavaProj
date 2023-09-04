@@ -1,4 +1,12 @@
+public interface GlobalSearchInfoIfc {
 
+	Integer getId();
+
+	String getPartyName();
+
+	String getCreatedDate();
+
+}
 select request_id from ucmcmt.email_message_tpm_request
 ucmcmt.email_message_tpm_request
 ucmcmt.tpm_request_network_elements/*not requested*/
