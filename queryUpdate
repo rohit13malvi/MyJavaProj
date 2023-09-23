@@ -1,1 +1,5 @@
 
+ @Query(value = "UPDATE emp " +
+                   "SET empName = CASE WHEN :empNameParam IS NULL THEN empName ELSE :empNameParam END, " +
+                   "empAge = CASE WHEN :empAgeParam IS NULL THEN empAge ELSE :empAgeParam " +
+                   "WHERE empid = :empIdParam", nativeQuery = true)
