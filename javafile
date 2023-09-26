@@ -248,3 +248,68 @@ public class EmailMessagesApiRestControllerTest {
         }
         return emailMessageExtractionId;
     }
+--------------------
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import java.util.UUID;
+
+import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+public class EmailMessagesServiceTest {
+
+    @InjectMocks
+    private EmailMessagesService emailMessagesService;
+
+    @Mock
+    private EmailMessageExtractionRepository emailMessageExtractionRepository;
+
+    @Mock
+    private EmailExtractionMappingRepository emailExtractionMappingRepository;
+
+    @BeforeEach
+    public void setUp() {
+        MockitoAnnotations.initMocks(this);
+    }
+
+    @Test
+    public void testCreateEmailMessageExtraction_Success() throws Exception {
+        // Arrange
+        UUID uuid = UUID.randomUUID();
+        MissingEmailInfoRequest mockRequest = new MissingEmailInfoRequest();
+        // Set up your mock objects and expectations as needed for this test case
+
+        when(emailExtractionMappingRepository.getEmailMessageExtractionId1(any())).thenReturn(null); // Customize this based on your scenario
+        when(emailMessageExtractionRepository.save(any(EmailMessageExtraction.class))).thenReturn(new EmailMessageExtraction());
+        when(emailExtractionMappingRepository.save(any(EmailExtractionMapping.class))).thenReturn(new EmailExtractionMapping());
+
+        // Act
+        Integer emailMessageExtractionId = emailMessagesService.createEmailMessageExtraction(mockRequest, uuid);
+
+        // Assert
+        // Verify that the expected methods were called and assert the result
+        verify(emailExtractionMappingRepository).getEmailMessageExtractionId1(any());
+        verify(emailMessageExtractionRepository).save(any(EmailMessageExtraction.class));
+        verify(emailExtractionMappingRepository).save(any(EmailExtractionMapping.class));
+        // Add assertions for emailMessageExtractionId based on your scenario
+    }
+
+    @Test
+    public void testCreateEmailMessageExtraction_Exception() {
+        // Arrange
+        UUID uuid = UUID.randomUUID();
+        MissingEmailInfoRequest mockRequest = new MissingEmailInfoRequest();
+        // Set up your mock objects and expectations as needed for this test case
+
+        when(emailExtractionMappingRepository.getEmailMessageExtractionId1(any())).thenReturn(null); // Customize this based on your scenario
+        when(emailMessageExtractionRepository.save(any(EmailMessageExtraction.class))).thenThrow(new SomeException()); // Replace SomeException with your actual exception class
+
+        // Act and Assert
+        // Add assertions to verify that the expected exception is thrown
+        assertThrows(Exception.class, () -> emailMessagesService.createEmailMessageExtraction(mockRequest, uuid));
+    }
+}
+
