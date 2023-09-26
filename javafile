@@ -1,1 +1,13 @@
 hello java
+    @RequestMapping(value = "/party/getActiveParty", produces = { "application/json" }, method = RequestMethod.GET)
+public ResponseEntity<List<Party>> getAllActiveParty(UUID uuid) {
+        ResponseEntity<List<Party>> response = new ResponseEntity<>(new ArrayList<Party>(), HttpStatus.OK);
+        try {
+            List<Party> partyList = partyService.findAllActiveParties(uuid);
+            response.getBody().addAll(partyList);
+            LOGGER.info("PartyApiRestController::getAllActiveParty# getting all the active party partyList(): UUID ={}", partyList, uuid);
+        }catch (Exception e){
+            LOGGER.error("PartyApiRestController::getAllActiveParty# error while fetching active party UUID={},Exception",uuid,e);
+        }
+        return response;
+    }
