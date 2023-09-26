@@ -595,3 +595,137 @@ public class EmailMessagesServiceTest {
         assertThrows(Exception.class, () -> emailMessagesService.updateMissingEmailInfo(mockRequest, uuid));
     }
 }
+===============
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.springframework.dao.DataIntegrityViolationException; // Import this if necessary
+import java.util.UUID;
+
+import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
+
+public class EmailMessagesServiceTest {
+
+    @InjectMocks
+    private EmailMessagesService emailMessagesService;
+
+    @Mock
+    private EmailMessageExtractionRepository emailMessageExtractionRepository;
+
+    @Mock
+    private EmailExtractionMappingRepository emailExtractionMappingRepository;
+
+    @Mock
+    private EmailMessagesRepository emailMessagesRepository;
+
+    @BeforeEach
+    public void setUp() {
+        MockitoAnnotations.initMocks(this);
+    }
+
+    @Test
+    public void testCreateEmailMessageExtraction_Success() throws Exception {
+        // Arrange
+        UUID uuid = UUID.randomUUID();
+        MissingEmailInfoRequest mockRequest = new MissingEmailInfoRequest();
+        // Set up your mock MissingEmailInfoRequest object and expectations as needed for this test case
+
+        when(emailExtractionMappingRepository.getEmailMessageExtractionId1(any())).thenReturn(null);
+        when(emailMessageExtractionRepository.save(any(EmailMessageExtraction.class))).thenReturn(new EmailMessageExtraction());
+
+        // Act
+        Integer emailMessageExtractionId = emailMessagesService.createEmailMessageExtraction(mockRequest, uuid);
+
+        // Assert
+        // Add assertions to verify the success scenario
+        assertNotNull(emailMessageExtractionId);
+    }
+
+    @Test
+    public void testCreateEmailMessageExtraction_Exception() {
+        // Arrange
+        UUID uuid = UUID.randomUUID();
+        MissingEmailInfoRequest mockRequest = new MissingEmailInfoRequest();
+        // Set up your mock MissingEmailInfoRequest object and expectations as needed for this test case
+
+        when(emailExtractionMappingRepository.getEmailMessageExtractionId1(any())).thenReturn(null);
+        when(emailMessageExtractionRepository.save(any(EmailMessageExtraction.class))).thenThrow(new SomeException()); // Replace SomeException with your actual exception class
+
+        // Act and Assert
+        // Add assertions to verify that the expected exception is thrown
+        assertThrows(Exception.class, () -> emailMessagesService.createEmailMessageExtraction(mockRequest, uuid));
+    }
+
+    @Test
+    public void testUpdateEmailMessageInfo_Success() throws Exception {
+        // Arrange
+        UUID uuid = UUID.randomUUID();
+        MissingEmailInfoRequest mockRequest = new MissingEmailInfoRequest();
+        // Set up your mock MissingEmailInfoRequest object and expectations as needed for this test case
+
+        EmailMessages mockEmailMessages = new EmailMessages();
+        // Set up your mock EmailMessages object as needed for this test case
+
+        when(emailMessagesRepository.findByEmailMessageId(any())).thenReturn(mockEmailMessages);
+        when(emailMessagesRepository.save(any(EmailMessages.class))).thenReturn(mockEmailMessages);
+
+        // Act
+        EmailMessages updatedEmailMessages = emailMessagesService.updateEmailMessageInfo(mockRequest, uuid);
+
+        // Assert
+        // Add assertions to verify the success scenario
+        assertNotNull(updatedEmailMessages);
+    }
+
+    @Test
+    public void testUpdateEmailMessageInfo_Exception() {
+        // Arrange
+        UUID uuid = UUID.randomUUID();
+        MissingEmailInfoRequest mockRequest = new MissingEmailInfoRequest();
+        // Set up your mock MissingEmailInfoRequest object and expectations as needed for this test case
+
+        when(emailMessagesRepository.findByEmailMessageId(any())).thenThrow(new DataIntegrityViolationException("Some exception message")); // Replace SomeException with your actual exception class
+
+        // Act and Assert
+        // Add assertions to verify that the expected exception is thrown
+        assertThrows(Exception.class, () -> emailMessagesService.updateEmailMessageInfo(mockRequest, uuid));
+    }
+
+    @Test
+    public void testUpdateMissingEmailInfo_Success() throws Exception {
+        // Arrange
+        UUID uuid = UUID.randomUUID();
+        MissingEmailInfoRequest mockRequest = new MissingEmailInfoRequest();
+        // Set up your mock MissingEmailInfoRequest object and expectations as needed for this test case
+
+        EmailMessages mockEmailMessages = new EmailMessages();
+        when(emailMessagesService.updateEmailMessageInfo(any(), any())).thenReturn(mockEmailMessages);
+        when(emailMessagesService.createEmailMessageExtraction(any(), any())).thenReturn(123); // Sample emailMessageReqeustId
+        when(emailMessageExtractionRepository.findByExtractionId1(123)).thenReturn("SampleReferenceId");
+
+        // Act
+        MissingEmailInfoResponse missingEmailInfoResponse = emailMessagesService.updateMissingEmailInfo(mockRequest, uuid);
+
+        // Assert
+        // Add assertions to verify the success scenario
+        assertNotNull(missingEmailInfoResponse);
+    }
+
+    @Test
+    public void testUpdateMissingEmailInfo_Exception() {
+        // Arrange
+        UUID uuid = UUID.randomUUID();
+        MissingEmailInfoRequest mockRequest = new MissingEmailInfoRequest();
+        // Set up your mock MissingEmailInfoRequest object and expectations as needed for this test case
+
+        when(emailMessagesService.updateEmailMessageInfo(any(), any())).thenThrow(new SomeException()); // Replace SomeException with your actual exception class
+
+        // Act and Assert
+        // Add assertions to verify that the expected exception is thrown
+        assertThrows(Exception.class, () -> emailMessagesService.updateMissingEmailInfo(mockRequest, uuid));
+    }
+}
+
