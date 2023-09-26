@@ -140,7 +140,7 @@ public class PartyServiceTest {
     }
 }
 -----------------------------
-   @Override
+     @RequestMapping(value = "/email-messages/missingEmailInfo", produces = { "application/json" }, consumes = { "application/json" }, method = RequestMethod.POST)
     public ResponseEntity<MissingEmailInfoResponse> updateMissingEmailInfo(MissingEmailInfoRequest missingEmailInfoRequest, @RequestHeader("UUID") UUID uuid) {
         MissingEmailInfoResponse missingEmailInfoResponse = new MissingEmailInfoResponse();
         LOGGER.info("EmailMessagesApiRestController::updateMissingEmailInfo# updating missing email info" +
