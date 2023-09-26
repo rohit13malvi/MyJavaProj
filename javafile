@@ -70,3 +70,15 @@ public class PartyApiRestControllerTest {
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
     }
 }
+==========================
+  public List<Party> findAllActiveParties(UUID uuid) {
+        List<Party> activeParty = null;
+        try {
+            activeParty = partyRepository.fetAllActiveParties();
+            LOGGER.info("PartyService::partyService# active party activeParty,UUID={} ", activeParty, uuid);
+
+        } catch (Exception e) {
+            LOGGER.error("PartyService::partyService# Exception while getting active party activeParty,UUID={} ", activeParty, uuid);
+        }
+        return activeParty;
+    }
