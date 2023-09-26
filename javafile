@@ -82,3 +82,61 @@ public class PartyApiRestControllerTest {
         }
         return activeParty;
     }
+==============
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+public class PartyServiceTest {
+
+    @InjectMocks
+    private PartyService partyService;
+
+    @Mock
+    private PartyRepository partyRepository;
+
+    @BeforeEach
+    public void setUp() {
+        MockitoAnnotations.initMocks(this);
+    }
+
+    @Test
+    public void testFindAllActiveParties_Success() {
+        // Arrange
+        UUID uuid = UUID.randomUUID();
+        List<Party> mockPartyList = new ArrayList<>();
+        // Add some sample data to mockPartyList
+
+        when(partyRepository.fetAllActiveParties()).thenReturn(mockPartyList);
+
+        // Act
+        List<Party> activeParties = partyService.findAllActiveParties(uuid);
+
+        // Assert
+        verify(partyRepository).fetAllActiveParties();
+        assertEquals(mockPartyList, activeParties);
+    }
+
+    @Test
+    public void testFindAllActiveParties_Exception() {
+        // Arrange
+        UUID uuid = UUID.randomUUID();
+        when(partyRepository.fetAllActiveParties()).thenThrow(new SomeException()); // Replace SomeException with your actual exception class
+
+        // Act
+        List<Party> activeParties = partyService.findAllActiveParties(uuid);
+
+        // Assert
+        verify(partyRepository).fetAllActiveParties();
+        assertEquals(null, activeParties); // You can customize this assertion based on your exception handling logic
+    }
+}
+
