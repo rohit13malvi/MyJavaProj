@@ -494,4 +494,32 @@ public class EmailMessagesServiceTest {
         // Add assertions to verify that the expected exception is thrown
         assertThrows(Exception.class, () -> emailMessagesService.updateEmailMessageInfo(mockRequest, uuid));
     }
+================================
+public MissingEmailInfoResponse updateMissingEmailInfo(MissingEmailInfoRequest missingEmailInfoRequest, UUID uuid) throws Exception {
+        EmailMessages emailmessages = null;
+        Integer emailMessageReqeustId = null;
+        String getRefrenceId = null;
+        MissingEmailInfoResponse missingEmailInfoResponse = new MissingEmailInfoResponse();
+        LOGGER.info("EmailMessagesService::updateMissingEmailInfo# updating language and party id , refrenceId   " +
+                "missingEmailInfoRequest{},uuid={}", missingEmailInfoRequest, uuid);
+        try {
+            emailmessages = updateEmailMessageInfo(missingEmailInfoRequest, uuid);
+            emailMessageReqeustId = createEmailMessageExtraction(missingEmailInfoRequest, uuid);
+
+            getRefrenceId = emailMessageExtractionRepository.findByExtractionId1(emailMessageReqeustId);
+
+            missingEmailInfoResponse.setEmailExtractionId(emailMessageReqeustId);
+            missingEmailInfoResponse.setEmailMessageId(emailmessages.getEmailMessageId());
+            missingEmailInfoResponse.setLanguage(emailmessages.getLanguage());
+            missingEmailInfoResponse.setPartyId(emailmessages.getPartyId());
+            missingEmailInfoResponse.setReferenceId(getRefrenceId);
+        } catch (Exception e) {
+            LOGGER.info("EmailMessagesService::updateEmailMessageInfo# Exception occured while updating language/party/refrenceId emailmessages{}, emailMessageReqeustId{} " +
+                    ",uuid={},Exception()", emailmessages, emailMessageReqeustId, uuid, e);
+            throw new Exception(
+                    "EmailMessagesService::updateEmailMessageInfo# Exception occured while updating language/party/refrenceId Exception " + e);
+        }
+        fiberValidationService.checkFiberEvent(missingEmailInfoRequest.getEmailMessageId(),uuid);
+        return missingEmailInfoResponse;
+    }
 }
