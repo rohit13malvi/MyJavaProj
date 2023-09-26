@@ -800,3 +800,106 @@ public Integer createEmailMessageExtraction(MissingEmailInfoRequest missingEmail
     return emailMessageExtractionId;
 }
 
+=================
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.springframework.dao.DataIntegrityViolationException;
+import java.util.UUID;
+import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+
+public class EmailMessagesServiceTest {
+
+    @InjectMocks
+    private EmailMessagesService emailMessagesService;
+
+    @Mock
+    private EmailExtractionMappingRepository emailExtractionMappingRepository;
+
+    @Mock
+    private EmailMessageExtractionRepository emailMessageExtractionRepository;
+
+    @BeforeEach
+    public void setUp() {
+        MockitoAnnotations.initMocks(this);
+    }
+
+    @Test
+    public void testCreateEmailMessageExtraction_Success() throws Exception {
+        // Arrange
+        UUID uuid = UUID.randomUUID();
+        MissingEmailInfoRequest mockRequest = new MissingEmailInfoRequest();
+        mockRequest.setEmailMessageId(123); // Set a valid emailMessageId
+        EmailMessageExtraction mockExtraction = new EmailMessageExtraction();
+        mockExtraction.setEmailMessageExtractionId(456);
+
+        when(emailExtractionMappingRepository.getEmailMessageExtractionId1(123)).thenReturn(null);
+        when(emailMessageExtractionRepository.save(any(EmailMessageExtraction.class))).thenReturn(mockExtraction);
+
+        // Act
+        Integer emailMessageExtractionId = emailMessagesService.createEmailMessageExtraction(mockRequest, uuid);
+
+        // Assert
+        assertNotNull(emailMessageExtractionId);
+        assertEquals(456, emailMessageExtractionId);
+        verify(emailExtractionMappingRepository).getEmailMessageExtractionId1(123);
+        verify(emailMessageExtractionRepository).save(any(EmailMessageExtraction.class));
+    }
+
+    @Test
+    public void testCreateEmailMessageExtraction_DataIntegrityViolationException() {
+        // Arrange
+        UUID uuid = UUID.randomUUID();
+        MissingEmailInfoRequest mockRequest = new MissingEmailInfoRequest();
+        mockRequest.setEmailMessageId(123); // Set a valid emailMessageId
+
+        when(emailExtractionMappingRepository.getEmailMessageExtractionId1(123)).thenReturn(null);
+        when(emailMessageExtractionRepository.save(any(EmailMessageExtraction.class)))
+                .thenThrow(DataIntegrityViolationException.class);
+
+        // Act and Assert
+        assertThrows(MyCustomException.class, () -> emailMessagesService.createEmailMessageExtraction(mockRequest, uuid));
+        verify(emailExtractionMappingRepository).getEmailMessageExtractionId1(123);
+        verify(emailMessageExtractionRepository).save(any(EmailMessageExtraction.class));
+    }
+
+    @Test
+    public void testCreateEmailMessageExtraction_EmailMessageExtractionIdNotNull() throws Exception {
+        // Arrange
+        UUID uuid = UUID.randomUUID();
+        MissingEmailInfoRequest mockRequest = new MissingEmailInfoRequest();
+        mockRequest.setEmailMessageId(123); // Set a valid emailMessageId
+
+        when(emailExtractionMappingRepository.getEmailMessageExtractionId1(123)).thenReturn(789);
+
+        // Act
+        Integer emailMessageExtractionId = emailMessagesService.createEmailMessageExtraction(mockRequest, uuid);
+
+        // Assert
+        assertNotNull(emailMessageExtractionId);
+        assertEquals(789, emailMessageExtractionId);
+        verify(emailExtractionMappingRepository).getEmailMessageExtractionId1(123);
+        verify(emailMessageExtractionRepository, never()).save(any(EmailMessageExtraction.class));
+    }
+
+    @Test
+    public void testCreateEmailMessageExtraction_Exception() {
+        // Arrange
+        UUID uuid = UUID.randomUUID();
+        MissingEmailInfoRequest mockRequest = new MissingEmailInfoRequest();
+        mockRequest.setEmailMessageId(123); // Set a valid emailMessageId
+
+        when(emailExtractionMappingRepository.getEmailMessageExtractionId1(123)).thenReturn(null);
+        when(emailMessageExtractionRepository.save(any(EmailMessageExtraction.class)))
+                .thenThrow(SomeException.class); // Replace SomeException with your actual exception class
+
+        // Act and Assert
+        assertThrows(MyCustomException.class, () -> emailMessagesService.createEmailMessageExtraction(mockRequest, uuid));
+        verify(emailExtractionMappingRepository).getEmailMessageExtractionId1(123);
+        verify(emailMessageExtractionRepository).save(any(EmailMessageExtraction.class));
+    }
+}
