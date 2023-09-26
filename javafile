@@ -139,4 +139,18 @@ public class PartyServiceTest {
         assertEquals(null, activeParties); // You can customize this assertion based on your exception handling logic
     }
 }
-
+-----------------------------
+   @Override
+    public ResponseEntity<MissingEmailInfoResponse> updateMissingEmailInfo(MissingEmailInfoRequest missingEmailInfoRequest, @RequestHeader("UUID") UUID uuid) {
+        MissingEmailInfoResponse missingEmailInfoResponse = new MissingEmailInfoResponse();
+        LOGGER.info("EmailMessagesApiRestController::updateMissingEmailInfo# updating missing email info" +
+                " updateMissingEmailInfo{},uuid={}", missingEmailInfoResponse, uuid);
+        try {
+            missingEmailInfoResponse = emailMessagesService.updateMissingEmailInfo(missingEmailInfoRequest, uuid);
+        } catch (Exception e) {
+            LOGGER.error("EmailMessagesApiRestController::updateMissingEmailInfo# Exception while updating the " +
+                    "missing email details updateMissingEmailInfo{},uuid={}", missingEmailInfoResponse, uuid);
+            return new ResponseEntity<>(missingEmailInfoResponse, HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(missingEmailInfoResponse, HttpStatus.OK);
+    }
