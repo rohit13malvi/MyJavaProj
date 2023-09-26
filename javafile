@@ -154,3 +154,63 @@ public class PartyServiceTest {
         }
         return new ResponseEntity<>(missingEmailInfoResponse, HttpStatus.OK);
     }
+--------------------------------------
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import java.util.UUID;
+
+import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+public class EmailMessagesApiRestControllerTest {
+
+    @InjectMocks
+    private EmailMessagesApiRestController emailMessagesController;
+
+    @Mock
+    private EmailMessagesService emailMessagesService;
+
+    @BeforeEach
+    public void setUp() {
+        MockitoAnnotations.initMocks(this);
+    }
+
+    @Test
+    public void testUpdateMissingEmailInfo_Success() {
+        // Arrange
+        UUID uuid = UUID.randomUUID();
+        MissingEmailInfoRequest mockRequest = new MissingEmailInfoRequest();
+        MissingEmailInfoResponse mockResponse = new MissingEmailInfoResponse();
+        // Add sample data to mockRequest and mockResponse
+
+        when(emailMessagesService.updateMissingEmailInfo(mockRequest, uuid)).thenReturn(mockResponse);
+
+        // Act
+        ResponseEntity<MissingEmailInfoResponse> responseEntity = emailMessagesController.updateMissingEmailInfo(mockRequest, uuid);
+
+        // Assert
+        verify(emailMessagesService).updateMissingEmailInfo(mockRequest, uuid);
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        assertEquals(mockResponse, responseEntity.getBody());
+    }
+
+    @Test
+    public void testUpdateMissingEmailInfo_Exception() {
+        // Arrange
+        UUID uuid = UUID.randomUUID();
+        MissingEmailInfoRequest mockRequest = new MissingEmailInfoRequest();
+        when(emailMessagesService.updateMissingEmailInfo(mockRequest, uuid)).thenThrow(new SomeException()); // Replace SomeException with your actual exception class
+
+        // Act
+        ResponseEntity<MissingEmailInfoResponse> responseEntity = emailMessagesController.updateMissingEmailInfo(mockRequest, uuid);
+
+        // Assert
+        verify(emailMessagesService).updateMissingEmailInfo(mockRequest, uuid);
+        assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
+    }
+}
