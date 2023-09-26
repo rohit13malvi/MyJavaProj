@@ -764,3 +764,39 @@ public void testUpdateEmailMessageInfo_Success() throws Exception {
     // Add assertions to verify the success scenario
     assertNotNull(updatedEmailMessages);
 }
+============
+public Integer createEmailMessageExtraction(MissingEmailInfoRequest missingEmailInfoRequest, UUID uuid) throws MyCustomException {
+    Integer emailMessageExtractionId = null;
+    EmailMessageExtraction emailMessageExtraction = new EmailMessageExtraction();
+    LOGGER.info("EmailMessagesService::createEmailMessageExtraction# getting EmailMessageExtraction id " +
+            "missingEmailInfoRequest{},uuid={}", missingEmailInfoRequest, uuid);
+    try {
+        EmailExtractionMapping saveEmailExtractionMapping = new EmailExtractionMapping();
+
+        if (missingEmailInfoRequest.getEmailMessageId() != null) {
+            emailMessageExtractionId = emailExtractionMappingRepository.getEmailMessageExtractionId1(missingEmailInfoRequest.getEmailMessageId());
+        }
+
+        if (emailMessageExtractionId == null) {
+            emailMessageExtraction.setReferenceId(missingEmailInfoRequest.getReferenceId());
+            emailMessageExtraction = emailMessageExtractionRepository.save(emailMessageExtraction);
+
+            if (emailMessageExtraction != null) {
+                emailMessageExtractionId = emailMessageExtraction.getEmailMessageExtractionId();
+                saveEmailExtractionMapping.setEmailMessageId(missingEmailInfoRequest.getEmailMessageId());
+                saveEmailExtractionMapping.setEmailMessageExtractionId(emailMessageExtraction.getEmailMessageExtractionId());
+                emailExtractionMappingRepository.save(saveEmailExtractionMapping);
+            }
+        }
+        LOGGER.info("EmailMessagesService::createEmailMessageExtraction# EmailMessageExtractionId{} " +
+                ",uuid={}", emailMessageExtractionId, uuid);
+    } catch (DataIntegrityViolationException e) {
+        LOGGER.error("Data integrity violation while creating EmailMessageExtraction. UUID={}, Exception: {}", uuid, e);
+        throw new MyCustomException("Data integrity violation while updating referenceId", e);
+    } catch (Exception e) {
+        LOGGER.error("Exception while creating EmailMessageExtraction. UUID={}, Exception: {}", uuid, e);
+        throw new MyCustomException("Exception occurred while updating referenceId", e);
+    }
+    return emailMessageExtractionId;
+}
+
