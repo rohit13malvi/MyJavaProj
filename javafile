@@ -743,3 +743,24 @@ public void testUpdateMissingEmailInfo_Exception() {
     assertThrows(SomeException.class, () -> emailMessagesService.updateMissingEmailInfo(mockRequest, uuid));
 }
 
+=================
+@Test
+public void testUpdateEmailMessageInfo_Success() throws Exception {
+    // Arrange
+    UUID uuid = UUID.randomUUID();
+    MissingEmailInfoRequest mockRequest = new MissingEmailInfoRequest();
+    mockRequest.setEmailMessageId(123); // Set a valid emailMessageId in the request
+
+    EmailMessages mockEmailMessages = new EmailMessages();
+    // Set up your mock EmailMessages object as needed for this test case
+
+    when(emailMessagesRepository.findByEmailMessageId(any())).thenReturn(mockEmailMessages);
+    when(emailMessagesRepository.save(any(EmailMessages.class))).thenReturn(mockEmailMessages);
+
+    // Act
+    EmailMessages updatedEmailMessages = emailMessagesService.updateEmailMessageInfo(mockRequest, uuid);
+
+    // Assert
+    // Add assertions to verify the success scenario
+    assertNotNull(updatedEmailMessages);
+}
