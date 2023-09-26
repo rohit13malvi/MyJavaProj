@@ -37,3 +37,57 @@
         return emailmessages;
 
     }
+==============
+import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import static org.mockito.Mockito.*;
+
+public class EmailMessagesServiceTest {
+
+    @Mock
+    private MissingEmailInfoRequest missingEmailInfoRequest;
+
+    @Mock
+    private EmailMessagesRepository emailMessagesRepository;
+
+    @Mock
+    private Logger LOGGER;
+
+    @Mock
+    private UUID uuid;
+
+    @Test
+    public void testUpdateEmailMessageInfo() throws Exception {
+        // Initialize mocks
+        MockitoAnnotations.openMocks(this);
+
+        // Create a sample email message
+        EmailMessages emailMessages = new EmailMessages();
+        emailMessages.setEmailMessageId(1);
+
+        // Mock behavior for emailMessagesRepository
+        when(missingEmailInfoRequest.getEmailMessageId()).thenReturn(1);
+        when(emailMessagesRepository.findByEmailMessageId(1)).thenReturn(emailMessages);
+
+        // Create an instance of the service
+        EmailMessagesService emailMessagesService = new EmailMessagesService(emailMessagesRepository, LOGGER);
+
+        // Call the method to be tested
+        EmailMessages result = emailMessagesService.updateEmailMessageInfo(missingEmailInfoRequest, uuid);
+
+        // Verify that findByEmailMessageId was called with the expected argument
+        verify(emailMessagesRepository).findByEmailMessageId(1);
+
+        // Verify that save was called on the emailMessagesRepository
+        verify(emailMessagesRepository).save(emailMessages);
+
+        // Verify that LOGGER.info was called with the expected arguments
+        verify(LOGGER).info("EmailMessagesService::updateEmailMessageInfo# updating language and party id " +
+                "missingEmailInfoRequest{},uuid={}", missingEmailInfoRequest, uuid);
+
+        // Assert the result or perform additional assertions as needed
+        // For example, you can assert that the result matches the expected emailMessages object.
+    }
+}
