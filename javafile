@@ -523,7 +523,7 @@ public MissingEmailInfoResponse updateMissingEmailInfo(MissingEmailInfoRequest m
         return missingEmailInfoResponse;
     }
 }
-====
+===================================
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -595,4 +595,3 @@ public class EmailMessagesServiceTest {
         assertThrows(Exception.class, () -> emailMessagesService.updateMissingEmailInfo(mockRequest, uuid));
     }
 }
-
