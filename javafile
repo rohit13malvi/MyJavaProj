@@ -347,3 +347,66 @@ public class EmailMessagesServiceTest {
         return emailmessages;
 
     }
+====================
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import java.util.UUID;
+
+import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+public class EmailMessagesServiceTest {
+
+    @InjectMocks
+    private EmailMessagesService emailMessagesService;
+
+    @Mock
+    private EmailMessagesRepository emailMessagesRepository;
+
+    @BeforeEach
+    public void setUp() {
+        MockitoAnnotations.initMocks(this);
+    }
+
+    @Test
+    public void testUpdateEmailMessageInfo_Success() throws Exception {
+        // Arrange
+        UUID uuid = UUID.randomUUID();
+        MissingEmailInfoRequest mockRequest = new MissingEmailInfoRequest();
+        mockRequest.setEmailMessageId(123); // Set up the emailMessageId in the request
+        mockRequest.setLanguage("English");
+        mockRequest.setPartyId(456);
+
+        EmailMessages mockEmailMessages = new EmailMessages();
+        // Set up your mock EmailMessages object as needed for this test case
+
+        when(emailMessagesRepository.findByEmailMessageId(mockRequest.getEmailMessageId())).thenReturn(mockEmailMessages);
+
+        // Act
+        EmailMessages updatedEmailMessages = emailMessagesService.updateEmailMessageInfo(mockRequest, uuid);
+
+        // Assert
+        verify(emailMessagesRepository).findByEmailMessageId(mockRequest.getEmailMessageId());
+        verify(emailMessagesRepository).save(mockEmailMessages);
+        // Add assertions to verify that the EmailMessages object is updated correctly
+        assertEquals("English", updatedEmailMessages.getLanguage());
+        assertEquals(456, updatedEmailMessages.getPartyId());
+    }
+
+    @Test
+    public void testUpdateEmailMessageInfo_Exception() {
+        // Arrange
+        UUID uuid = UUID.randomUUID();
+        MissingEmailInfoRequest mockRequest = new MissingEmailInfoRequest();
+        mockRequest.setEmailMessageId(123); // Set up the emailMessageId in the request
+
+        when(emailMessagesRepository.findByEmailMessageId(mockRequest.getEmailMessageId())).thenThrow(new SomeException()); // Replace SomeException with your actual exception class
+
+        // Act and Assert
+        // Add assertions to verify that the expected exception is thrown
+        assertThrows(Exception.class, () -> emailMessagesService.updateEmailMessageInfo(mockRequest, uuid));
+    }
+}
