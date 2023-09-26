@@ -214,3 +214,37 @@ public class EmailMessagesApiRestControllerTest {
         assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
     }
 }
+--------------------------
+ public Integer createEmailMessageExtraction(MissingEmailInfoRequest missingEmailInfoRequest, UUID uuid) throws Exception{
+        Integer emailMessageExtractionId = null;
+        EmailMessageExtraction emailMessageExtraction = new EmailMessageExtraction();
+        LOGGER.info("EmailMessagesService::createEmailMessageExtraction# getting EmailMessageExtraction id  " +
+                "missingEmailInfoRequest{},uuid={}", missingEmailInfoRequest, uuid);
+        try {
+            EmailExtractionMapping saveeEailExtractionMapping = new EmailExtractionMapping();
+
+            if (missingEmailInfoRequest.getEmailMessageId() != null) {
+                emailMessageExtractionId = emailExtractionMappingRepository.getEmailMessageExtractionId1(missingEmailInfoRequest.getEmailMessageId());
+            }
+
+            if (emailMessageExtractionId == null) {
+                emailMessageExtraction.setReferenceId(missingEmailInfoRequest.getReferenceId());
+                emailMessageExtraction = emailMessageExtractionRepository.save(emailMessageExtraction);
+
+                if (emailMessageExtraction != null) {
+                    emailMessageExtractionId = emailMessageExtraction.getEmailMessageExtractionId();
+                    saveeEailExtractionMapping.setEmailMessageId(missingEmailInfoRequest.getEmailMessageId());
+                    saveeEailExtractionMapping.setEmailMessageExtractionId(emailMessageExtraction.getEmailMessageExtractionId());
+                    emailExtractionMappingRepository.save(saveeEailExtractionMapping);
+                }
+            }
+            LOGGER.info("EmailMessagesService::createEmailMessageExtraction# EmailMessageExtractionId{} " +
+                    ",uuid={}", emailMessageExtractionId, uuid);
+        } catch (Exception e) {
+            LOGGER.info("EmailMessagesService::createEmailMessageExtraction# Exception while getting emailMessageExtractionId{} " +
+                    ",uuid={},Exception()", emailMessageExtractionId, uuid, e);
+            throw new Exception(
+                    "Exception occured while updating refrenceId " + e);
+        }
+        return emailMessageExtractionId;
+    }
