@@ -313,3 +313,37 @@ public class EmailMessagesServiceTest {
     }
 }
 
+=============
+   public EmailMessages updateEmailMessageInfo(MissingEmailInfoRequest missingEmailInfoRequest,UUID uuid) throws Exception {
+        Integer emailMessageId = missingEmailInfoRequest.getEmailMessageId();
+        EmailMessages emailmessages = null;
+        LOGGER.info("EmailMessagesService::updateEmailMessageInfo# updating language and party id   " +
+                "missingEmailInfoRequest{},uuid={}", missingEmailInfoRequest, uuid);
+        try {
+            emailmessages = emailMessagesRepository.findByEmailMessageId(emailMessageId);
+
+            String language = missingEmailInfoRequest.getLanguage();
+            Integer partyId = missingEmailInfoRequest.getPartyId();
+
+            if (language != null || partyId != null) {
+
+                if (missingEmailInfoRequest.getLanguage() != null) {
+                    emailmessages.setLanguage(missingEmailInfoRequest.getLanguage());
+                }
+
+                if (missingEmailInfoRequest.getPartyId() != null) {
+                    emailmessages.setPartyId(missingEmailInfoRequest.getPartyId());
+                }
+
+                emailmessages = emailMessagesRepository.save(emailmessages);
+            }
+
+        } catch (Exception e) {
+            LOGGER.info("EmailMessagesService::updateEmailMessageInfo# Exception occured while updating language/party info for email Message Id emailMessageId{} " +
+                    ",uuid={},Exception()", emailMessageId, uuid, e);
+            throw new Exception(
+                    "Exception occured while updating language/party info for email Message Id " + emailMessageId);
+        }
+        return emailmessages;
+
+    }
