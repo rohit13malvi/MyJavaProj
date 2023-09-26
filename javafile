@@ -410,3 +410,88 @@ public class EmailMessagesServiceTest {
         assertThrows(Exception.class, () -> emailMessagesService.updateEmailMessageInfo(mockRequest, uuid));
     }
 }
+==
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import java.util.UUID;
+
+import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
+import org.springframework.dao.DataIntegrityViolationException; // Import this if necessary
+
+public class EmailMessagesServiceTest {
+
+    @InjectMocks
+    private EmailMessagesService emailMessagesService;
+
+    @Mock
+    private EmailMessagesRepository emailMessagesRepository;
+
+    @BeforeEach
+    public void setUp() {
+        MockitoAnnotations.initMocks(this);
+    }
+
+    @Test
+    public void testUpdateEmailMessageInfo_Success() throws Exception {
+        // Arrange
+        UUID uuid = UUID.randomUUID();
+        MissingEmailInfoRequest mockRequest = new MissingEmailInfoRequest();
+        mockRequest.setEmailMessageId(123); // Set up the emailMessageId in the request
+        mockRequest.setLanguage("English");
+        mockRequest.setPartyId(456);
+
+        EmailMessages mockEmailMessages = new EmailMessages();
+        // Set up your mock EmailMessages object as needed for this test case
+        mockEmailMessages.setEmailMessageId(123);
+
+        when(emailMessagesRepository.findByEmailMessageId(mockRequest.getEmailMessageId())).thenReturn(mockEmailMessages);
+        when(emailMessagesRepository.save(any(EmailMessages.class))).thenReturn(mockEmailMessages);
+
+        // Act
+        EmailMessages updatedEmailMessages = emailMessagesService.updateEmailMessageInfo(mockRequest, uuid);
+
+        // Assert
+        verify(emailMessagesRepository).findByEmailMessageId(mockRequest.getEmailMessageId());
+        verify(emailMessagesRepository).save(mockEmailMessages);
+
+        assertNotNull(updatedEmailMessages);
+        assertEquals("English", updatedEmailMessages.getLanguage());
+        assertEquals(456, updatedEmailMessages.getPartyId());
+    }
+
+    @Test
+    public void testUpdateEmailMessageInfo_NullSaveResult() {
+        // Arrange
+        UUID uuid = UUID.randomUUID();
+        MissingEmailInfoRequest mockRequest = new MissingEmailInfoRequest();
+        mockRequest.setEmailMessageId(123); // Set up the emailMessageId in the request
+
+        EmailMessages mockEmailMessages = new EmailMessages();
+        mockEmailMessages.setEmailMessageId(123);
+
+        when(emailMessagesRepository.findByEmailMessageId(mockRequest.getEmailMessageId())).thenReturn(mockEmailMessages);
+        when(emailMessagesRepository.save(any(EmailMessages.class))).thenReturn(null); // Simulate a null result after saving
+
+        // Act and Assert
+        // Add assertions to verify that the expected exception is thrown
+        assertThrows(Exception.class, () -> emailMessagesService.updateEmailMessageInfo(mockRequest, uuid));
+    }
+
+    @Test
+    public void testUpdateEmailMessageInfo_ExceptionOnFind() {
+        // Arrange
+        UUID uuid = UUID.randomUUID();
+        MissingEmailInfoRequest mockRequest = new MissingEmailInfoRequest();
+        mockRequest.setEmailMessageId(123); // Set up the emailMessageId in the request
+
+        when(emailMessagesRepository.findByEmailMessageId(mockRequest.getEmailMessageId())).thenThrow(new DataIntegrityViolationException("Some exception message")); // Simulate an exception on find
+
+        // Act and Assert
+        // Add assertions to verify that the expected exception is thrown
+        assertThrows(Exception.class, () -> emailMessagesService.updateEmailMessageInfo(mockRequest, uuid));
+    }
+}
