@@ -903,3 +903,79 @@ public class EmailMessagesServiceTest {
         verify(emailMessageExtractionRepository).save(any(EmailMessageExtraction.class));
     }
 }
+====
+import static org.mockito.Mockito.*;
+import static org.junit.Assert.*;
+import org.junit.Before;
+import org.junit.Test;
+import java.util.UUID;
+
+public class EmailMessagesServiceTest {
+
+    private EmailMessagesService emailMessagesService;
+    private EmailMessagesRepository emailMessagesRepository;
+    private EmailMessageExtractionRepository emailMessageExtractionRepository;
+    private FiberValidationService fiberValidationService;
+
+    @Before
+    public void setUp() {
+        emailMessagesService = new EmailMessagesService();
+        emailMessagesRepository = mock(EmailMessagesRepository.class);
+        emailMessageExtractionRepository = mock(EmailMessageExtractionRepository.class);
+        fiberValidationService = mock(FiberValidationService.class);
+        emailMessagesService.setEmailMessagesRepository(emailMessagesRepository);
+        emailMessagesService.setEmailMessageExtractionRepository(emailMessageExtractionRepository);
+        emailMessagesService.setFiberValidationService(fiberValidationService);
+    }
+
+    @Test
+    public void testUpdateMissingEmailInfo_Success() throws Exception {
+        // Arrange
+        UUID uuid = UUID.randomUUID();
+        MissingEmailInfoRequest mockRequest = new MissingEmailInfoRequest();
+        mockRequest.setEmailMessageId(123); // Set a valid emailMessageId
+        // Set up your mockRequest object and expectations as needed for this test case
+        
+        EmailMessages mockEmailMessages = new EmailMessages();
+        mockEmailMessages.setEmailMessageId(456); // Set a valid emailMessageId
+        mockEmailMessages.setLanguage("English");
+        mockEmailMessages.setPartyId(789);
+        
+        when(emailMessagesRepository.findByEmailMessageId(eq(mockRequest.getEmailMessageId()))).thenReturn(mockEmailMessages);
+
+        Integer mockExtractionId = 789; // Set a valid extractionId
+        when(emailMessageExtractionRepository.findByExtractionId1(eq(mockExtractionId))).thenReturn("Ref123");
+
+        // Act
+        MissingEmailInfoResponse response = emailMessagesService.updateMissingEmailInfo(mockRequest, uuid);
+
+        // Assert
+        assertNotNull(response);
+        assertEquals(mockEmailMessages.getEmailMessageId(), response.getEmailMessageId());
+        assertEquals(mockEmailMessages.getLanguage(), response.getLanguage());
+        assertEquals(mockEmailMessages.getPartyId(), response.getPartyId());
+        assertEquals("Ref123", response.getReferenceId());
+        
+        // Verify that emailMessageExtractionRepository.findByExtractionId1 was called with the expected argument
+        verify(emailMessageExtractionRepository).findByExtractionId1(eq(mockExtractionId));
+
+        // Verify that fiberValidationService.checkFiberEvent was called with the expected arguments
+        verify(fiberValidationService).checkFiberEvent(eq(mockRequest.getEmailMessageId()), eq(uuid));
+    }
+
+    @Test(expected = Exception.class)
+    public void testUpdateMissingEmailInfo_ExceptionHandling() throws Exception {
+        // Arrange
+        UUID uuid = UUID.randomUUID();
+        MissingEmailInfoRequest mockRequest = new MissingEmailInfoRequest();
+        // Set up your mockRequest object and expectations as needed for this test case
+        
+        when(emailMessagesRepository.findByEmailMessageId(anyInt())).thenThrow(new Exception("Simulated Exception"));
+
+        // Act
+        emailMessagesService.updateMissingEmailInfo(mockRequest, uuid);
+
+        // Assert
+        // Expecting an exception to be thrown
+    }
+}
