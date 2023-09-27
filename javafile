@@ -1099,3 +1099,5 @@ public class EmailMessagesServiceTest {
     }
 }
 
+===========
+A "NullPointerException" could be thrown; "emailmessages" is nullable here.
