@@ -979,3 +979,123 @@ public class EmailMessagesServiceTest {
         // Expecting an exception to be thrown
     }
 }
+----------------------
+import static org.mockito.Mockito.*;
+
+@RunWith(MockitoJUnitRunner.class)
+public class EmailMessagesServiceTest {
+
+    @InjectMocks
+    private EmailMessagesService emailMessagesService;
+
+    @Mock
+    private EmailMessagesRepository emailMessagesRepository;
+
+    @Mock
+    private EmailExtractionMappingRepository emailExtractionMappingRepository;
+
+    @Mock
+    private EmailMessageExtractionRepository emailMessageExtractionRepository;
+
+    @Mock
+    private FiberValidationService fiberValidationService;
+
+    @Test
+    public void testUpdateMissingEmailInfo_Success() throws Exception {
+        // Mock the dependencies
+        MissingEmailInfoRequest mockRequest = new MissingEmailInfoRequest();
+        UUID uuid = UUID.randomUUID();
+
+        EmailMessages emailMessages = new EmailMessages();
+        emailMessages.setEmailMessageId(123);
+        when(emailMessagesRepository.findByEmailMessageId(anyInt())).thenReturn(emailMessages);
+
+        when(emailExtractionMappingRepository.getEmailMessageExtractionId1(anyInt())).thenReturn(456);
+
+        when(emailMessageExtractionRepository.findByExtractionId1(anyInt())).thenReturn("Reference123");
+
+        // Invoke the method
+        MissingEmailInfoResponse response = emailMessagesService.updateMissingEmailInfo(mockRequest, uuid);
+
+        // Verify the response and interactions
+        assertFalse(response.isError());
+        assertEquals(123, response.getEmailMessageId());
+        assertEquals("English", response.getLanguage());
+        assertEquals(456, response.getPartyId());
+        assertEquals("Reference123", response.getReferenceId());
+        
+        // Verify that fiberValidationService is called
+        verify(fiberValidationService).checkFiberEvent(123, uuid);
+    }
+
+    @Test
+    public void testUpdateMissingEmailInfo_UpdateEmailMessageInfoException() throws Exception {
+        // Mock the dependencies
+        MissingEmailInfoRequest mockRequest = new MissingEmailInfoRequest();
+        UUID uuid = UUID.randomUUID();
+
+        when(emailMessagesRepository.findByEmailMessageId(anyInt())).thenThrow(new SomeException());
+
+        // Invoke the method
+        try {
+            emailMessagesService.updateMissingEmailInfo(mockRequest, uuid);
+            fail("Exception should be thrown");
+        } catch (SomeException e) {
+            // Verify that the exception is propagated
+        }
+
+        // Verify that fiberValidationService is not called
+        verifyZeroInteractions(fiberValidationService);
+    }
+
+    @Test
+    public void testUpdateMissingEmailInfo_CreateEmailMessageExtractionException() throws Exception {
+        // Mock the dependencies
+        MissingEmailInfoRequest mockRequest = new MissingEmailInfoRequest();
+        UUID uuid = UUID.randomUUID();
+
+        EmailMessages emailMessages = new EmailMessages();
+        emailMessages.setEmailMessageId(123);
+        when(emailMessagesRepository.findByEmailMessageId(anyInt())).thenReturn(emailMessages);
+
+        when(emailExtractionMappingRepository.getEmailMessageExtractionId1(anyInt())).thenThrow(new SomeException());
+
+        // Invoke the method
+        try {
+            emailMessagesService.updateMissingEmailInfo(mockRequest, uuid);
+            fail("Exception should be thrown");
+        } catch (SomeException e) {
+            // Verify that the exception is propagated
+        }
+
+        // Verify that fiberValidationService is not called
+        verifyZeroInteractions(fiberValidationService);
+    }
+
+    @Test
+    public void testUpdateMissingEmailInfo_FindByExtractionId1Exception() throws Exception {
+        // Mock the dependencies
+        MissingEmailInfoRequest mockRequest = new MissingEmailInfoRequest();
+        UUID uuid = UUID.randomUUID();
+
+        EmailMessages emailMessages = new EmailMessages();
+        emailMessages.setEmailMessageId(123);
+        when(emailMessagesRepository.findByEmailMessageId(anyInt())).thenReturn(emailMessages);
+
+        when(emailExtractionMappingRepository.getEmailMessageExtractionId1(anyInt())).thenReturn(456);
+
+        when(emailMessageExtractionRepository.findByExtractionId1(anyInt())).thenThrow(new SomeException());
+
+        // Invoke the method
+        try {
+            emailMessagesService.updateMissingEmailInfo(mockRequest, uuid);
+            fail("Exception should be thrown");
+        } catch (SomeException e) {
+            // Verify that the exception is propagated
+        }
+
+        // Verify that fiberValidationService is not called
+        verifyZeroInteractions(fiberValidationService);
+    }
+}
+
