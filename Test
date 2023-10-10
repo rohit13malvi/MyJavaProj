@@ -19,3 +19,102 @@ ser:
         }
         return "Email Unlocked sucessfully after request creation";
     }
+
+res con:
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+import static org.mockito.Mockito.*;
+
+public class EmailMessagesControllerTest {
+
+    @InjectMocks
+    private EmailMessagesController emailMessagesController;
+
+    @Mock
+    private EmailMessagesService emailMessagesService;
+
+    @BeforeEach
+    public void setUp() {
+        MockitoAnnotations.initMocks(this);
+    }
+
+    @Test
+    public void testUnlockProcessedEmail() {
+        // Arrange
+        List<Integer> unlockProcessedEmail = new ArrayList<>();
+        unlockProcessedEmail.add(1); // Add test data
+        UUID uuid = UUID.randomUUID();
+        String expectedEmailMessageId = "someId";
+
+        when(emailMessagesService.ProcessedEmailUnlockUpdate(unlockProcessedEmail, uuid))
+            .thenReturn(expectedEmailMessageId);
+
+        // Act
+        ResponseEntity<String> responseEntity = emailMessagesController.unlockProcessedEmail(unlockProcessedEmail, uuid);
+
+        // Assert
+        verify(emailMessagesService, times(1)).ProcessedEmailUnlockUpdate(unlockProcessedEmail, uuid);
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        assertEquals(expectedEmailMessageId, responseEntity.getBody());
+    }
+}
+res ser:
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+import static org.mockito.Mockito.*;
+
+public class EmailMessagesServiceTest {
+
+    @InjectMocks
+    private EmailMessagesService emailMessagesService;
+
+    @Mock
+    private EmailMessagesRepository emailMessagesRepository;
+
+    @BeforeEach
+    public void setUp() {
+        MockitoAnnotations.initMocks(this);
+    }
+
+    @Test
+    public void testProcessedEmailUnlockUpdate() {
+        // Arrange
+        List<Integer> unlockProcessedEmail = new ArrayList<>();
+        unlockProcessedEmail.add(1); // Add test data
+        UUID uuid = UUID.randomUUID();
+
+        EmailMessages emailMessageToUpdate = new EmailMessages();
+        emailMessageToUpdate.setId(1);
+        emailMessageToUpdate.setIsLocked(true);
+
+        when(emailMessagesRepository.findById(1)).thenReturn(Optional.of(emailMessageToUpdate));
+
+        // Act
+        String result = emailMessagesService.ProcessedEmailUnlockUpdate(unlockProcessedEmail, uuid);
+
+        // Assert
+        verify(emailMessagesRepository, times(1)).findById(1);
+        verify(emailMessagesRepository, times(1)).updateUnockedMessage(1);
+        assertEquals("Email Unlocked successfully after request creation", result);
+    }
+}
+
