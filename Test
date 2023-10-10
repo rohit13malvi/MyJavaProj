@@ -1,0 +1,21 @@
+con:
+    @RequestMapping(value = "/email-messages/unlockEmail", produces = {"application/json"}, consumes = {"application/json"}, method = RequestMethod.POST)
+public ResponseEntity<String> unlockProcessedEmail(@RequestBody List<Integer> unlockProcessedEmail, @RequestHeader("UUID") UUID uuid) {
+        String emailMessageId = emailMessagesService.ProcessedEmailUnlockUpdate(unlockProcessedEmail,uuid);
+        return new ResponseEntity<>(emailMessageId, HttpStatus.OK);
+    }
+ser:
+ public String ProcessedEmailUnlockUpdate(List<Integer> unlockProcessedEmail, UUID uuid) {
+        try {
+            LOGGER.info("EmailMessagesService::ProcessedEmailUnlockUpdate updating a processed email locked info while request creation  emailMessageId{},uuid={}", unlockProcessedEmail, uuid);
+            for (Integer id : unlockProcessedEmail) {
+                EmailMessages emailMessageToUpdate = emailMessagesRepository.findById(id).get();
+                if (emailMessageToUpdate.getIsLocked() == true) {
+                    emailMessagesRepository.updateUnockedMessage(id);
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.error("EmailMessagesService::ProcessedEmailUnlockUpdate incorrect message id emailMessageId{},uuid={}", unlockProcessedEmail, uuid, e);
+        }
+        return "Email Unlocked sucessfully after request creation";
+    }
