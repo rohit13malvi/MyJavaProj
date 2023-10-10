@@ -117,4 +117,71 @@ public class EmailMessagesServiceTest {
         assertEquals("Email Unlocked successfully after request creation", result);
     }
 }
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
+
+public class EmailMessagesServiceTest {
+
+    @InjectMocks
+    private EmailMessagesService emailMessagesService;
+
+    @Mock
+    private EmailMessagesRepository emailMessagesRepository;
+
+    @BeforeEach
+    public void setUp() {
+        MockitoAnnotations.initMocks(this);
+    }
+
+    @Test
+    public void testProcessedEmailUnlockUpdate_Success() {
+        // Arrange
+        List<Integer> unlockProcessedEmail = new ArrayList<>();
+        unlockProcessedEmail.add(1); // Add test data
+        UUID uuid = UUID.randomUUID();
+
+        EmailMessages emailMessageToUpdate = new EmailMessages();
+        emailMessageToUpdate.setId(1);
+        emailMessageToUpdate.setIsLocked(true);
+
+        when(emailMessagesRepository.findById(1)).thenReturn(Optional.of(emailMessageToUpdate));
+
+        // Act
+        String result = emailMessagesService.ProcessedEmailUnlockUpdate(unlockProcessedEmail, uuid);
+
+        // Assert
+        verify(emailMessagesRepository, times(1)).findById(1);
+        verify(emailMessagesRepository, times(1)).updateUnockedMessage(1);
+        assertEquals("Email Unlocked successfully after request creation", result);
+    }
+
+    @Test
+    public void testProcessedEmailUnlockUpdate_Exception() {
+        // Arrange
+        List<Integer> unlockProcessedEmail = new ArrayList<>();
+        unlockProcessedEmail.add(1); // Add test data
+        UUID uuid = UUID.randomUUID();
+
+        when(emailMessagesRepository.findById(1)).thenThrow(new RuntimeException("Simulated exception"));
+
+        // Act
+        String result = emailMessagesService.ProcessedEmailUnlockUpdate(unlockProcessedEmail, uuid);
+
+        // Assert
+        verify(emailMessagesRepository, times(1)).findById(1);
+        verifyNoMoreInteractions(emailMessagesRepository); // Ensure no further interactions with the repository
+        assertEquals("Email Unlocked successfully after request creation", result); // Ensure the method returns a default message
+    }
+}
 
