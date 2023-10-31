@@ -34,3 +34,211 @@ ser.
         }
         return cmtEmailLocationResponseDTO;
     }
+---------------
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+
+import static org.mockito.Mockito.*;
+
+@RunWith(MockitoJUnitRunner.class)
+public class CMTEmailLocationControllerTest {
+
+    @Mock
+    private CMTEmailLocationService cmtEmailLocationService;
+
+    @InjectMocks
+    private CMTEmailLocationController cmtEmailLocationController;
+
+    @Test
+    public void testEmailLocationSuccess() {
+        // Mock input data
+        CMTEmailLocationRequestDTO requestDTO = new CMTEmailLocationRequestDTO();
+        UUID uuid = UUID.randomUUID();
+        CMTEmailLocationResponseDTO responseDTO = new CMTEmailLocationResponseDTO();
+        
+        // Mock the service to return a response
+        when(cmtEmailLocationService.getEmailLocations(requestDTO, uuid)).thenReturn(responseDTO);
+        
+        // Call the controller method
+        ResponseEntity<CMTEmailLocationResponseDTO> responseEntity = cmtEmailLocationController.emailLocation(requestDTO, uuid);
+        
+        // Verify that the service method was called with the correct parameters
+        verify(cmtEmailLocationService).getEmailLocations(requestDTO, uuid);
+        
+        // Check the response
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        assertEquals(responseDTO, responseEntity.getBody());
+    }
+
+    @Test
+    public void testEmailLocationError() {
+        // Mock input data
+        CMTEmailLocationRequestDTO requestDTO = new CMTEmailLocationRequestDTO();
+        UUID uuid = UUID.randomUUID();
+        
+        // Mock the service to throw an exception
+        when(cmtEmailLocationService.getEmailLocations(requestDTO, uuid)).thenThrow(new SomeException());
+        
+        // Call the controller method
+        ResponseEntity<CMTEmailLocationResponseDTO> responseEntity = cmtEmailLocationController.emailLocation(requestDTO, uuid);
+        
+        // Verify that the service method was called with the correct parameters
+        verify(cmtEmailLocationService).getEmailLocations(requestDTO, uuid);
+        
+        // Check the response
+        assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
+    }
+
+    @Test
+    public void testEmailLocationUnhandledException() {
+        // Mock input data
+        CMTEmailLocationRequestDTO requestDTO = new CMTEmailLocationRequestDTO();
+        UUID uuid = UUID.randomUUID();
+        
+        // Mock the service to throw an unchecked exception (e.g., NullPointerException)
+        when(cmtEmailLocationService.getEmailLocations(requestDTO, uuid)).thenThrow(new NullPointerException());
+        
+        // Call the controller method
+        ResponseEntity<CMTEmailLocationResponseDTO> responseEntity = cmtEmailLocationController.emailLocation(requestDTO, uuid);
+        
+        // Verify that the service method was called with the correct parameters
+        verify(cmtEmailLocationService).getEmailLocations(requestDTO, uuid);
+        
+        // Check the response
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
+    }
+}
+-------------
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import java.util.UUID;
+
+import static org.mockito.Mockito.*;
+import static org.junit.Assert.*;
+
+public class CMTEmailLocationServiceTest {
+
+    @Mock
+    private CMTLocationRepository cmtLocationRepository;
+
+    @InjectMocks
+    private CMTEmailLocationService cmtEmailLocationService;
+
+    @Before
+    public void init() {
+        MockitoAnnotations.initMocks(this);
+    }
+
+    @Test
+    public void testGetEmailLocationsWithEquipmentIdCircuitType() {
+        // Mock input data
+        CMTEmailLocationRequestDTO requestDTO = new CMTEmailLocationRequestDTO();
+        UUID uuid = UUID.randomUUID();
+        requestDTO.setEquipmentId(123); // Set equipmentId
+        requestDTO.setEquipmentType("circuit");
+
+        // Mock the repository to return a location response
+        when(cmtLocationRepository.getCircuitLocationId(123)).thenReturn(new CMTEmailLocationResponseDTO());
+
+        // Call the service method
+        CMTEmailLocationResponseDTO responseDTO = cmtEmailLocationService.getEmailLocations(requestDTO, uuid);
+
+        // Verify that the repository method was called with the correct parameter
+        verify(cmtLocationRepository).getCircuitLocationId(123);
+
+        // Check the response
+        assertNotNull(responseDTO);
+    }
+
+    @Test
+    public void testGetEmailLocationsWithEquipmentIdDeviceType() {
+        // Mock input data
+        CMTEmailLocationRequestDTO requestDTO = new CMTEmailLocationRequestDTO();
+        UUID uuid = UUID.randomUUID();
+        requestDTO.setEquipmentId(456); // Set equipmentId
+        requestDTO.setEquipmentType("device");
+
+        // Mock the repository to return a location response
+        when(cmtLocationRepository.getDeviceLocationId(456)).thenReturn(new CMTEmailLocationResponseDTO());
+
+        // Call the service method
+        CMTEmailLocationResponseDTO responseDTO = cmtEmailLocationService.getEmailLocations(requestDTO, uuid);
+
+        // Verify that the repository method was called with the correct parameter
+        verify(cmtLocationRepository).getDeviceLocationId(456);
+
+        // Check the response
+        assertNotNull(responseDTO);
+    }
+
+    @Test
+    public void testGetEmailLocationsWithInvalidEquipmentType() {
+        // Mock input data
+        CMTEmailLocationRequestDTO requestDTO = new CMTEmailLocationRequestDTO();
+        UUID uuid = UUID.randomUUID();
+        requestDTO.setEquipmentId(789); // Set equipmentId
+        requestDTO.setEquipmentType("invalid-type");
+
+        // Call the service method
+        CMTEmailLocationResponseDTO responseDTO = cmtEmailLocationService.getEmailLocations(requestDTO, uuid);
+
+        // Verify that the repository methods were not called
+        verifyZeroInteractions(cmtLocationRepository);
+
+        // Check the response
+        assertNotNull(responseDTO);
+    }
+
+    @Test
+    public void testGetEmailLocationsWithoutEquipmentId() {
+        // Mock input data
+        CMTEmailLocationRequestDTO requestDTO = new CMTEmailLocationRequestDTO();
+        UUID uuid = UUID.randomUUID();
+        requestDTO.setCity("City");
+        requestDTO.setState("State");
+        requestDTO.setCountry("Country");
+
+        // Mock the repository to return an area location response
+        when(cmtLocationRepository.getAreaLocationId("City", "State", "Country")).thenReturn(123);
+
+        // Call the service method
+        CMTEmailLocationResponseDTO responseDTO = cmtEmailLocationService.getEmailLocations(requestDTO, uuid);
+
+        // Verify that the repository method was called with the correct parameters
+        verify(cmtLocationRepository).getAreaLocationId("City", "State", "Country");
+
+        // Check the response
+        assertNotNull(responseDTO);
+        assertEquals(123, responseDTO.getUtsLocationId().intValue());
+    }
+
+    @Test
+    public void testGetEmailLocationsWithError() {
+        // Mock input data
+        CMTEmailLocationRequestDTO requestDTO = new CMTEmailLocationRequestDTO();
+        UUID uuid = UUID.randomUUID();
+
+        // Mock the repository to throw an exception
+        when(cmtLocationRepository.getAreaLocationId("City", "State", "Country")).thenThrow(new SomeException());
+
+        // Call the service method
+        CMTEmailLocationResponseDTO responseDTO = cmtEmailLocationService.getEmailLocations(requestDTO, uuid);
+
+        // Verify that the repository method was called with the correct parameters
+        verify(cmtLocationRepository).getAreaLocationId("City", "State", "Country");
+
+        // Check the response
+        assertNotNull(responseDTO);
+        // Handle the error response as needed
+    }
+}
