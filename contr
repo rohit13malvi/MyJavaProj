@@ -44,3 +44,12 @@ public class YourControllerTest {
     }
 }
 
+==
+ @MockBean
+    private CMTEmailLocationService cmtEmailLocationService;
+
+    @Test
+    @DirtiesContext
+    public void testEmailLocationEndpoint() throws Exception {
+        // Your test code here
+    }
