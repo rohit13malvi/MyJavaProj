@@ -403,3 +403,70 @@ public class CMTEmailLocationServiceTest {
         catch(Exception e){
 
         }
+
+--------------------
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import static org.mockito.Mockito.*;
+import static org.junit.Assert.*;
+import static org.mockito.BDDMockito.given;
+
+public class CMTEmailLocationServiceTest {
+
+    @Mock
+    private CMTLocationRepository cmtLocationRepository;
+
+    @InjectMocks
+    private CMTEmailLocationService cmtEmailLocationService;
+
+    @Before
+    public void init() {
+        MockitoAnnotations.initMocks(this);
+    }
+
+    @Test
+    public void testGetEmailLocationsWithExceptionHandling() {
+        // Mock input data
+        CMTEmailLocationRequestDTO requestDTO = new CMTEmailLocationRequestDTO();
+        UUID uuid = UUID.randomUUID();
+
+        // Mock the repository method to return normally
+        when(cmtLocationRepository.getAreaLocationId(any(), any(), any())).thenReturn(123);
+
+        // Mock the service method to throw an exception
+        doThrow(new SomeException()).when(cmtEmailLocationService).getEmailLocations(requestDTO, uuid);
+
+        // Call the service method
+        CMTEmailLocationResponseDTO responseDTO = cmtEmailLocationService.getEmailLocations(requestDTO, uuid);
+
+        // Verify that the repository method was called
+        verify(cmtLocationRepository).getAreaLocationId(requestDTO.getCity(), requestDTO.getState(), requestDTO.getCountry());
+
+        // Verify that the service method properly handled the exception
+        assertNotNull(responseDTO);
+        // Handle the error response as needed
+    }
+
+    @Test
+    public void testGetEmailLocationsWithoutException() {
+        // Mock input data
+        CMTEmailLocationRequestDTO requestDTO = new CMTEmailLocationRequestDTO();
+        UUID uuid = UUID.randomUUID();
+
+        // Mock the repository method to return normally
+        when(cmtLocationRepository.getAreaLocationId(any(), any(), any())).thenReturn(123);
+
+        // Call the service method
+        CMTEmailLocationResponseDTO responseDTO = cmtEmailLocationService.getEmailLocations(requestDTO, uuid);
+
+        // Verify that the repository method was called
+        verify(cmtLocationRepository).getAreaLocationId(requestDTO.getCity(), requestDTO.getState(), requestDTO.getCountry());
+
+        // Verify that the service method returns a valid response
+        assertNotNull(responseDTO);
+    }
+}
+
