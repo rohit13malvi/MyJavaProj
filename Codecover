@@ -242,3 +242,48 @@ public class CMTEmailLocationServiceTest {
         // Handle the error response as needed
     }
 }
+--------------------------
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import java.util.UUID;
+
+import static org.mockito.Mockito.*;
+import static org.junit.Assert.*;
+
+public class CMTEmailLocationServiceTest {
+
+    @Mock
+    private CMTLocationRepository cmtLocationRepository;
+
+    @InjectMocks
+    private CMTEmailLocationService cmtEmailLocationService;
+
+    @Before
+    public void init() {
+        MockitoAnnotations.initMocks(this);
+    }
+
+    @Test
+    public void testGetEmailLocationsWithExceptionInCatchBlock() {
+        // Mock input data
+        CMTEmailLocationRequestDTO requestDTO = new CMTEmailLocationRequestDTO();
+        UUID uuid = UUID.randomUUID();
+
+        // Mock the repository to throw an exception
+        when(cmtLocationRepository.getAreaLocationId("City", "State", "Country")).thenThrow(new SomeException());
+
+        // Call the service method
+        CMTEmailLocationResponseDTO responseDTO = cmtEmailLocationService.getEmailLocations(requestDTO, uuid);
+
+        // Verify that the repository method was called with the correct parameters
+        verify(cmtLocationRepository).getAreaLocationId("City", "State", "Country");
+
+        // Check the response
+        assertNotNull(responseDTO);
+        // Handle the error response as needed
+    }
+}
