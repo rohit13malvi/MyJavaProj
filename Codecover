@@ -637,3 +637,73 @@ public class CMTEmailLocationControllerTest {
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
 }
+========
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
+import org.springframework.test.context.junit4.SpringRunner;
+import static org.mockito.Mockito.*;
+import static org.junit.Assert.*;
+
+@RunWith(SpringRunner.class)
+@SpringBootTest
+public class CMTEmailLocationControllerTest {
+
+    @Mock
+    private CMTEmailLocationService cmtEmailLocationService;
+
+    @InjectMocks
+    private CMTEmailLocationController cmtEmailLocationController;
+
+    @Before
+    public void init() {
+        MockitoAnnotations.initMocks(this);
+    }
+
+    @Test
+    public void testEmailLocationSuccess() {
+        // Mock input data
+        CMTEmailLocationRequestDTO requestDTO = new CMTEmailLocationRequestDTO();
+        UUID uuid = UUID.randomUUID();
+        CMTEmailLocationResponseDTO expectedResponse = new CMTEmailLocationResponseDTO();
+
+        // Mock the service to return a response
+        when(cmtEmailLocationService.getEmailLocations(requestDTO, uuid)).thenReturn(expectedResponse);
+
+        // Call the controller method
+        ResponseEntity<CMTEmailLocationResponseDTO> response = cmtEmailLocationController.emailLocation(requestDTO, uuid);
+
+        // Verify that the service method was called with the correct parameters
+        verify(cmtEmailLocationService).getEmailLocations(requestDTO, uuid);
+
+        // Check the response
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(expectedResponse, response.getBody());
+    }
+
+    @Test
+    public void testEmailLocationException() {
+        // Mock input data
+        CMTEmailLocationRequestDTO requestDTO = new CMTEmailLocationRequestDTO();
+        UUID uuid = UUID.randomUUID();
+
+        // Mock the service to throw an exception
+        when(cmtEmailLocationService.getEmailLocations(requestDTO, uuid)).thenThrow(new SomeException());
+
+        // Call the controller method
+        ResponseEntity<CMTEmailLocationResponseDTO> response = cmtEmailLocationController.emailLocation(requestDTO, uuid);
+
+        // Verify that the service method was called with the correct parameters
+        verify(cmtEmailLocationService).getEmailLocations(requestDTO, uuid);
+
+        // Check the response
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+    }
+}
