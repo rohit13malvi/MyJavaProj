@@ -383,3 +383,23 @@ public class CMTEmailLocationServiceTest {
         // Handle the error response as needed
     }
 }
+
+---
+  public CMTEmailLocationResponseDTO getEmailLocations(CMTEmailLocationRequestDTO cmtEmailLocationRequestDTO, UUID uuid){
+
+        CMTEmailLocationResponseDTO cmtEmailLocationResponseDTO= new CMTEmailLocationResponseDTO();
+        try {
+            if (cmtEmailLocationRequestDTO.getValid()) {
+                cmtEmailLocationResponseDTO = cmtEmailLocationRequestDTO.getEquipmentType().equalsIgnoreCase("circuit") ?
+                    cmtLocationRepository.getCircuitLocationId(cmtEmailLocationRequestDTO.getEquipmentId()) :
+                    cmtLocationRepository.getDeviceLocationId(cmtEmailLocationRequestDTO.getEquipmentId());
+            } else {
+                Integer areaLocationId = cmtLocationRepository.getAreaLocationId(cmtEmailLocationRequestDTO.getCity(),
+                    cmtEmailLocationRequestDTO.getState(),
+                    cmtEmailLocationRequestDTO.getCountry());
+                cmtEmailLocationResponseDTO.setUtsLocationId(areaLocationId);
+            }
+        }
+        catch(Exception e){
+
+        }
