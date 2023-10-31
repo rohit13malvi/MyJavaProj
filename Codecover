@@ -560,3 +560,16 @@ public void testGetEmailLocationsWithValidDeviceEquipment() {
     // Check the response
     assertNotNull(responseDTO);
 }
+---
+      @RequestMapping(value = "/email-labels", produces = { "application/json" }, method = RequestMethod.GET)
+
+    public ResponseEntity<CMTEmailLocationResponseDTO> emailLocation(CMTEmailLocationRequestDTO cmtEmailLocationRequestDTO, UUID uuid) {
+        ResponseEntity<CMTEmailLocationResponseDTO> response;
+        try {
+            CMTEmailLocationResponseDTO  cmtEmailLocationResponseDTO=cmtEmailLocationService.getEmailLocations(cmtEmailLocationRequestDTO,uuid);
+            response=new ResponseEntity<>(cmtEmailLocationResponseDTO,HttpStatus.OK);
+        }catch (Exception e){
+            response=new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        return response;
+    }
