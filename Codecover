@@ -469,4 +469,50 @@ public class CMTEmailLocationServiceTest {
         assertNotNull(responseDTO);
     }
 }
+--------------------
+@Test
+public void testGetEmailLocationsWithValidEquipmentAndValidFlagTrue() {
+    // Mock input data
+    CMTEmailLocationRequestDTO requestDTO = new CMTEmailLocationRequestDTO();
+    UUID uuid = UUID.randomUUID();
+    requestDTO.setValid(true);
+    requestDTO.setEquipmentType("circuit");
+    requestDTO.setEquipmentId(123);
+
+    // Mock the repository to return a response
+    when(cmtLocationRepository.getCircuitLocationId(123)).thenReturn(new CMTEmailLocationResponseDTO());
+
+    // Call the service method
+    CMTEmailLocationResponseDTO responseDTO = cmtEmailLocationService.getEmailLocations(requestDTO, uuid);
+
+    // Verify that the repository method was called with the correct parameters
+    verify(cmtLocationRepository).getCircuitLocationId(123);
+
+    // Check the response
+    assertNotNull(responseDTO);
+}
+
+@Test
+public void testGetEmailLocationsWithNonValidEquipmentAndValidFlagFalse() {
+    // Mock input data
+    CMTEmailLocationRequestDTO requestDTO = new CMTEmailLocationRequestDTO();
+    UUID uuid = UUID.randomUUID();
+    requestDTO.setValid(false);
+    requestDTO.setCity("City");
+    requestDTO.setState("State");
+    requestDTO.setCountry("Country");
+
+    // Mock the repository to return an area location response
+    when(cmtLocationRepository.getAreaLocationId("City", "State", "Country")).thenReturn(123);
+
+    // Call the service method
+    CMTEmailLocationResponseDTO responseDTO = cmtEmailLocationService.getEmailLocations(requestDTO, uuid);
+
+    // Verify that the repository method was called with the correct parameters
+    verify(cmtLocationRepository).getAreaLocationId("City", "State", "Country");
+
+    // Check the response
+    assertNotNull(responseDTO);
+    assertEquals(123, responseDTO.getUtsLocationId().intValue());
+}
 
