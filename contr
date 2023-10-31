@@ -1,1 +1,46 @@
+   @RequestMapping(value = "/email-labels", produces = { "application/json" }, method = RequestMethod.GET)
+
+    public ResponseEntity<CMTEmailLocationResponseDTO> emailLocation(CMTEmailLocationRequestDTO cmtEmailLocationRequestDTO, UUID uuid) {
+        ResponseEntity<CMTEmailLocationResponseDTO> response;
+        try {
+            CMTEmailLocationResponseDTO  cmtEmailLocationResponseDTO=cmtEmailLocationService.getEmailLocations(cmtEmailLocationRequestDTO,uuid);
+            response=new ResponseEntity<>(cmtEmailLocationResponseDTO,HttpStatus.OK);
+        }catch (Exception e){
+            response=new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        return response;
+    }
+---
+@RunWith(SpringRunner.class)
+@WebMvcTest(YourController.class) // Replace 'YourController' with the actual name of your controller
+public class YourControllerTest {
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @MockBean
+    private CMTEmailLocationService cmtEmailLocationService; // Replace with your actual service
+
+    @Test
+    public void testEmailLocationEndpoint() throws Exception {
+        // Prepare a sample request DTO and UUID
+        CMTEmailLocationRequestDTO requestDTO = new CMTEmailLocationRequestDTO();
+        UUID uuid = UUID.randomUUID();
+
+        // Create a sample response DTO
+        CMTEmailLocationResponseDTO responseDTO = new CMTEmailLocationResponseDTO();
+        responseDTO.setSomeProperty("Sample Value");
+
+        // Mock the behavior of your service
+        when(cmtEmailLocationService.getEmailLocations(eq(requestDTO), eq(uuid))).thenReturn(responseDTO);
+
+        // Perform the GET request to the "/email-labels" endpoint
+        mockMvc.perform(get("/email-labels")
+                .param("uuid", uuid.toString()) // Add UUID as a request parameter
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk()) // Expect a 200 OK status
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.someProperty").value("Sample Value")); // Ensure the expected response property value
+    }
+}
 
