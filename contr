@@ -53,3 +53,54 @@ public class YourControllerTest {
     public void testEmailLocationEndpoint() throws Exception {
         // Your test code here
     }
+
+===
+@RunWith(SpringRunner.class)
+@WebMvcTest(YourController.class) // Replace 'YourController' with your actual controller
+public class YourControllerTest {
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @MockBean
+    private CMTEmailLocationService cmtEmailLocationService;
+
+    @Test
+    public void testEmailLocationEndpointSuccess() throws Exception {
+        // Prepare a sample request DTO and UUID
+        CMTEmailLocationRequestDTO requestDTO = new CMTEmailLocationRequestDTO();
+        UUID uuid = UUID.randomUUID();
+
+        // Create a sample response DTO
+        CMTEmailLocationResponseDTO responseDTO = new CMTEmailLocationResponseDTO();
+        responseDTO.setSomeProperty("Sample Value");
+
+        // Mock the behavior of your service for success
+        when(cmtEmailLocationService.getEmailLocations(eq(requestDTO), eq(uuid))).thenReturn(responseDTO);
+
+        // Perform the GET request to the "/email-labels" endpoint
+        mockMvc.perform(get("/email-labels")
+                .param("uuid", uuid.toString())
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk()) // Expect a 200 OK status
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.someProperty").value("Sample Value"));
+    }
+
+    @Test
+    public void testEmailLocationEndpointFailure() throws Exception {
+        // Prepare a sample request DTO and UUID
+        CMTEmailLocationRequestDTO requestDTO = new CMTEmailLocationRequestDTO();
+        UUID uuid = UUID.randomUUID();
+
+        // Mock the behavior of your service to throw an exception
+        when(cmtEmailLocationService.getEmailLocations(eq(requestDTO), eq(uuid))).thenThrow(new RuntimeException("Simulated Exception"));
+
+        // Perform the GET request to the "/email-labels" endpoint
+        mockMvc.perform(get("/email-labels")
+                .param("uuid", uuid.toString())
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest()); // Expect a 400 Bad Request status
+    }
+}
+
