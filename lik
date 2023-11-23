@@ -20,3 +20,94 @@ private void addEmailMessageExtractionProcessRecord(EditAttributesDTO editAttrib
             LOGGER.error("addEmailMessageExtractionProcessRecord::Exception while adding email message extraction process record editAttributesDTO:{},emailMessageExtractionId:{}, uuid={},Exception:{}",editAttributesDTO,emailMessageExtractionId,uuid,e);
         }
     }
+---------------------
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+import org.slf4j.Logger;
+import org.junit.jupiter.api.BeforeEach;
+
+import java.util.UUID;
+
+public class YourTestClass {
+
+    @Mock
+    private EmailMessageExtractionProcessRepository emailMessageExtractionProcessRepository;
+
+    @Mock
+    private Logger logger;
+
+    @InjectMocks
+    private YourClassContainingMethod yourClassContainingMethod;
+
+    @BeforeEach
+    public void setup() {
+        MockitoAnnotations.initMocks(this);
+    }
+
+    @Test
+    public void testAddEmailMessageExtractionProcessRecord_WithException() {
+        // Prepare test data
+        EditAttributesDTO editAttributesDTO = new EditAttributesDTO();
+        editAttributesDTO.setProcessStartTime("startTime");
+        editAttributesDTO.setProcessEndTime("endTime");
+        int emailMessageExtractionId = 123;
+        UUID uuid = UUID.randomUUID();
+
+        // Mock repository save to throw an exception
+        Mockito.doThrow(RuntimeException.class).when(emailMessageExtractionProcessRepository).save(Mockito.any());
+
+        // Call the method
+        yourClassContainingMethod.addEmailMessageExtractionProcessRecord(editAttributesDTO, emailMessageExtractionId, uuid);
+
+        // Verify that the logger.error() method was called with the expected parameters
+        Mockito.verify(logger).error("addEmailMessageExtractionProcessRecord::Exception while adding email message extraction process record editAttributesDTO:{},emailMessageExtractionId:{}, uuid={},Exception:{}",
+            editAttributesDTO, emailMessageExtractionId, uuid, Mockito.any(RuntimeException.class));
+    }
+
+    // Add other test cases as per different scenarios
+}
+---------------
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+import org.slf4j.Logger;
+
+import java.util.UUID;
+
+public class YourTestClass {
+
+    @Mock
+    private EmailMessageExtractionProcessRepository emailMessageExtractionProcessRepository;
+
+    @Mock
+    private Logger logger;
+
+    @InjectMocks
+    private YourClassContainingMethod yourClassContainingMethod;
+
+    @Test
+    public void testAddEmailMessageExtractionProcessRecord_ExceptionHandling() {
+        // Prepare test data
+        EditAttributesDTO editAttributesDTO = new EditAttributesDTO();
+        editAttributesDTO.setProcessStartTime("startTime");
+        editAttributesDTO.setProcessEndTime("endTime");
+        int emailMessageExtractionId = 123;
+        UUID uuid = UUID.randomUUID();
+
+        // Mock repository save to throw an exception
+        Mockito.when(emailMessageExtractionProcessRepository.save(Mockito.any()))
+               .thenThrow(new RuntimeException("Repository save failed"));
+
+        // Call the method
+        yourClassContainingMethod.addEmailMessageExtractionProcessRecord(editAttributesDTO, emailMessageExtractionId, uuid);
+
+        // Verify that the logger.error() method was called with the expected parameters
+        Mockito.verify(logger).error("addEmailMessageExtractionProcessRecord::Exception while adding email message extraction process record editAttributesDTO:{},emailMessageExtractionId:{}, uuid={},Exception:{}",
+                editAttributesDTO, emailMessageExtractionId, uuid, Mockito.any(RuntimeException.class));
+    }
+}
