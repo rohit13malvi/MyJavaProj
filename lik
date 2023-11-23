@@ -2,3 +2,21 @@ https://www.google.com/url?q=https://verizon.webex.com/verizon/j.php?MTID%3Dm830
 
 mani
 https://verizon.webex.com/verizon/j.php?MTID=m17a78264fac59af47db0e8176c82a186
+------------------
+private void addEmailMessageExtractionProcessRecord(EditAttributesDTO editAttributesDTO, int emailMessageExtractionId, UUID uuid) {
+        try {
+            LOGGER.info("addEmailMessageExtractionProcessRecord::adding a email message extraction process record editAttributesDTO:{},emailMessageExtractionId:{}, uuid={},",editAttributesDTO,emailMessageExtractionId,uuid);
+            if (editAttributesDTO.getProcessStartTime() != null && editAttributesDTO.getProcessEndTime() != null) {
+                EmailMessageExtractionProcess emailMessageExtractionProcess = new EmailMessageExtractionProcess();
+                emailMessageExtractionProcess.setStartTime(editAttributesDTO.getProcessStartTime());
+                emailMessageExtractionProcess.setEndTime(editAttributesDTO.getProcessEndTime());
+                emailMessageExtractionProcess.setEmailMessageExtractionId(emailMessageExtractionId);
+                emailMessageExtractionProcess.setCreatedBy(editAttributesDTO.getModifiedBy());
+                emailMessageExtractionProcess.setCreatedDate(editAttributesDTO.getModifiedDate());
+                emailMessageExtractionProcessRepository.save(emailMessageExtractionProcess);
+                LOGGER.info("addEmailMessageExtractionProcessRecord::Added a email message extraction process record emailMessageExtractionProcess:{},emailMessageExtractionId:{}, uuid={},",emailMessageExtractionProcess,emailMessageExtractionId,uuid);
+            }
+        }catch (Exception e){
+            LOGGER.error("addEmailMessageExtractionProcessRecord::Exception while adding email message extraction process record editAttributesDTO:{},emailMessageExtractionId:{}, uuid={},Exception:{}",editAttributesDTO,emailMessageExtractionId,uuid,e);
+        }
+    }
