@@ -80,3 +80,46 @@ public class DashBoardEmailSearchService extends EmailMessageSearchService imple
 
 }
 -------------------------
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
+
+import java.util.UUID;
+
+import static org.mockito.Mockito.*;
+
+@ExtendWith(MockitoExtension.class)
+public class DashBoardEmailSearchServiceTest {
+
+    @Mock
+    private EmailMessageSearchRepository emailMessageSearchRepository;
+
+    @InjectMocks
+    private DashBoardEmailSearchService dashBoardEmailSearchService;
+
+    @Test
+    public void testEmailMessageSearch() {
+        EmailMessageSearchCriteria searchCriteria = new EmailMessageSearchCriteria();
+        UUID uuid = UUID.randomUUID();
+        String metaOnly = "meta";
+
+        Page<MessagesEntity> mockedPage = mock(Page.class);
+        when(emailMessageSearchRepository.findAll(any(DashboardSummarySpecification.class), any(Pageable.class)))
+                .thenReturn(mockedPage);
+
+        ResponseEntity<com.verizon.ucm.interactionmanagement.response.Page<EmailMessageSearchResponse>> responseEntity =
+                dashBoardEmailSearchService.emailMessageSearch(searchCriteria, uuid, metaOnly);
+
+        verify(emailMessageSearchRepository, times(1)).findAll(any(DashboardSummarySpecification.class), any(Pageable.class));
+        verify(dashBoardEmailSearchService, times(1)).prepareEmailMessageSearchResponse(
+                eq(mockedPage),
+                any(ResponseEntity.class),
+                eq(uuid)
+        );
+    }
+}
