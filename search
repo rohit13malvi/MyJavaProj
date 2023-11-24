@@ -1,0 +1,82 @@
+package com.verizon.ucm.interactionmanagement.services.search.emailmessages;
+
+import java.time.Duration;
+import java.time.Instant;
+import java.util.UUID;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+
+import com.verizon.ucm.interactionmanagement.entity.MessagesEntity;
+import com.verizon.ucm.interactionmanagement.ifc.EmailMessageSearchIfc;
+import com.verizon.ucm.interactionmanagement.repository.EmailMessageSearchRepository;
+import com.verizon.ucm.interactionmanagement.response.EmailMessageSearchResponse;
+import com.verizon.ucm.interactionmanagement.specifications.DashboardSummarySpecification;
+import com.verizon.ucm.interactionmanagement.specifications.EmailMessageSearchCriteria;
+
+
+@Service
+public class DashBoardEmailSearchService extends EmailMessageSearchService implements EmailMessageSearchIfc {
+	
+	private static final Logger LOGGER = LoggerFactory.getLogger(DashBoardEmailSearchService.class);
+	
+	@Autowired
+	private EmailMessageSearchRepository emailMessageSearchRepository;
+	
+	@Override
+	public ResponseEntity<com.verizon.ucm.interactionmanagement.response.Page<EmailMessageSearchResponse>> emailMessageSearch(
+			EmailMessageSearchCriteria emailMessageSearchCriteria, UUID uuid, String metaOnly) {
+		LOGGER.info("EmailMessageInboxSearchService# getEmailMessages#: inside getEmailMessages: uuid={}", uuid);
+		
+		Sort sort = Sort.by(null != emailMessageSearchCriteria.getSortColumn() ? findSortColumn(emailMessageSearchCriteria.getSortColumn())
+						: "emailMessagesEntity.emailMessageId");
+		
+		if ((null == emailMessageSearchCriteria.getSortOrder()) || (null != emailMessageSearchCriteria.getSortOrder()
+				&& emailMessageSearchCriteria.getSortOrder().equalsIgnoreCase("desc"))) {
+			sort = sort.descending();
+		}
+        
+		Pageable page = PageRequest.of(emailMessageSearchCriteria.getPage(), emailMessageSearchCriteria.getSize(), sort);
+		
+		Instant specificationStartTime = Instant.now();
+		LOGGER.info("EmailMessageInboxSearchService# getEmailMessages#:started:Specification creation for uuid={}, search_criteria={}",
+				uuid, emailMessageSearchCriteria);
+		
+		DashboardSummarySpecification spec = new DashboardSummarySpecification(emailMessageLabelsRepository, emailMessageSearchCriteria);
+		
+		LOGGER.info(
+				"EmailMessageInboxSearchService# getEmailMessages#:completed:Specification created for uuid={}, time_taken={}, search_criteria={}",
+				uuid,Duration.between(specificationStartTime, Instant.now()).toMillis(), emailMessageSearchCriteria);
+		
+		LOGGER.info("EmailMessageInboxSearchService# getEmailMessages#:started:query execution for uuid={}, search_criteria={}",
+				uuid, emailMessageSearchCriteria);
+		Instant queryStartTime = Instant.now();
+		Page<MessagesEntity> customConflictInfoList = emailMessageSearchRepository.findAll(spec, page);
+		LOGGER.info("EmailMessageInboxSearchService# getEmailMessages#:completed:query execution for uuid={}, time_taken={}, search_criteria={}",
+				uuid,Duration.between(queryStartTime, Instant.now()).toMillis(), emailMessageSearchCriteria);
+
+		ResponseEntity<com.verizon.ucm.interactionmanagement.response.Page<EmailMessageSearchResponse>> customRuleActiveRes = new ResponseEntity<com.verizon.ucm.interactionmanagement.response.Page<EmailMessageSearchResponse>>(
+				new com.verizon.ucm.interactionmanagement.response.Page<EmailMessageSearchResponse>(), HttpStatus.OK);
+
+		LOGGER.info("EmailMessageInboxSearchService# getEmailMessages#:started:preparing email message search response for uuid={}, search_criteria={}",
+				uuid, emailMessageSearchCriteria);
+		Instant emailMessageResponseStartTime = Instant.now();
+		
+		prepareEmailMessageSearchResponse(customConflictInfoList, customRuleActiveRes, uuid);
+
+		LOGGER.info("EmailMessageInboxSearchService# getEmailMessages#:completed:preparing email message search response for uuid={}, time_taken={}, search_criteria={}",
+				uuid, Duration.between(emailMessageResponseStartTime, Instant.now()).toMillis(), emailMessageSearchCriteria);
+		return customRuleActiveRes;
+	}
+
+
+}
+-------------------------
