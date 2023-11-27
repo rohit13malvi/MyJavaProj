@@ -151,4 +151,72 @@ public class DashBoardInboxSummaryServiceTest {
         // Assertions for the filled InboxResponse object
     }
 }
+--------------------
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
+import java.util.UUID;
+
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+
+@RunWith(MockitoJUnitRunner.class)
+public class DashBoardInboxSummaryServiceTest {
+
+    @Mock
+    private EmailMessageSearchRepository emailMessageSearchRepository;
+
+    @Mock
+    private DashBoardSummaryHandler dashBoardSummaryHandler;
+
+    @Mock
+    private EmailMessageLabelsRepository emailMessageLabelsRepository;
+
+    @InjectMocks
+    private DashBoardInboxSummaryService inboxSummaryService;
+
+    @Test
+    public void testGetDashBoardInboxSummary_Success() {
+        Page<MessagesEntity> mockPage = Mockito.mock(Page.class);
+        Mockito.when(mockPage.getTotalElements()).thenReturn(10L);
+
+        Mockito.when(emailMessageSearchRepository.findAll(any(), any())).thenReturn(mockPage);
+
+        EmailMessageFilterCriteria emailCriteria = new EmailMessageFilterCriteria();
+
+        InboxResponse response = inboxSummaryService.getDashBoardInboxSummary(UUID.randomUUID(), Pageable.unpaged(), emailCriteria);
+
+        assertNotNull(response);
+        // Add assertions for the expected response based on mocked data
+    }
+
+    @Test
+    public void testGetDashBoardInboxSummary_ExceptionHandling() {
+        Mockito.when(emailMessageSearchRepository.findAll(any(), any())).thenThrow(new RuntimeException("Test Exception"));
+
+        EmailMessageFilterCriteria emailCriteria = new EmailMessageFilterCriteria();
+
+        InboxResponse response = inboxSummaryService.getDashBoardInboxSummary(UUID.randomUUID(), Pageable.unpaged(), emailCriteria);
+
+        // Assertions for expected exception handling
+    }
+
+    @Test
+    public void testFillInboxResponseObj() {
+        InboxResponse inboxResponse = new InboxResponse();
+        Page<MessagesEntity> mockPage = Mockito.mock(Page.class);
+        Mockito.when(mockPage.getTotalElements()).thenReturn(5L);
+
+        inboxSummaryService.fillInboxResponseObj(inboxResponse, mockPage, DashBoardInboxSearchEnum.isSeen.name());
+
+        // Assertions for the filled InboxResponse object
+    }
+}
+
 
