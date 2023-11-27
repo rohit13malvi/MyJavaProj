@@ -85,3 +85,58 @@ public class DashBoardInboxSummaryService {
 	}
 
 }
+
+============
+@RunWith(MockitoJUnitRunner.class)
+public class DashBoardInboxSummaryServiceTest {
+
+    @Mock
+    private EmailMessageSearchRepository emailMessageSearchRepository;
+
+    @Mock
+    private DashBoardSummaryHandler dashBoardSummaryHandler;
+
+    @Mock
+    private EmailMessageLabelsRepository emailMessageLabelsRepository;
+
+    @InjectMocks
+    private DashBoardInboxSummaryService inboxSummaryService;
+
+    @Test
+    public void testGetDashBoardInboxSummary_Success() {
+        Page<MessagesEntity> mockPage = Mockito.mock(Page.class);
+        Mockito.when(mockPage.getTotalElements()).thenReturn(10L);
+
+        Mockito.when(emailMessageSearchRepository.findAll(Mockito.any(), Mockito.any())).thenReturn(mockPage);
+
+        EmailMessageFilterCriteria emailCriteria = new EmailMessageFilterCriteria();
+
+        InboxResponse response = inboxSummaryService.getDashBoardInboxSummary(UUID.randomUUID(), Pageable.unpaged(), emailCriteria);
+
+        assertNotNull(response);
+        // Add assertions for the expected response based on mocked data
+    }
+
+    @Test
+    public void testGetDashBoardInboxSummary_ExceptionHandling() {
+        // Mock necessary dependencies to throw exceptions
+
+        EmailMessageFilterCriteria emailCriteria = new EmailMessageFilterCriteria();
+
+        InboxResponse response = inboxSummaryService.getDashBoardInboxSummary(UUID.randomUUID(), Pageable.unpaged(), emailCriteria);
+
+        // Assertions for expected exception handling
+    }
+
+    @Test
+    public void testFillInboxResponseObj() {
+        InboxResponse inboxResponse = new InboxResponse();
+        Page<MessagesEntity> mockPage = Mockito.mock(Page.class);
+        Mockito.when(mockPage.getTotalElements()).thenReturn(5L);
+
+        inboxSummaryService.fillInboxResponseObj(inboxResponse, mockPage, DashBoardInboxSearchEnum.isSeen.name());
+
+        // Assertions for the filled InboxResponse object
+    }
+}
+
