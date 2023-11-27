@@ -101,3 +101,74 @@ public class DashBoardMyTasklistService {
 	}
 
 }
+------------
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
+import java.util.UUID;
+
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+
+@RunWith(MockitoJUnitRunner.class)
+public class DashBoardMyTasklistServiceTest {
+
+    @Mock
+    private EmailMessageSearchRepository emailMessageSearchRepository;
+
+    @Mock
+    private DashBoardSummaryHandler dashBoardSummaryHandler;
+
+    @Mock
+    private EmailMessageLabelsRepository emailMessageLabelsRepository;
+
+    @InjectMocks
+    private DashBoardMyTasklistService myTasklistService;
+
+    @Test
+    public void testGetDashBoardMyTaskListSummary_Success() {
+        Page<MessagesEntity> mockPage = Mockito.mock(Page.class);
+        Mockito.when(mockPage.getTotalElements()).thenReturn(10L);
+
+        Mockito.when(emailMessageSearchRepository.findAll(any(), any())).thenReturn(mockPage);
+
+        EmailMessageFilterCriteria processedEmailCriteria = new EmailMessageFilterCriteria();
+        EmailMessageFilterCriteria unProcessedEmailCriteria = new EmailMessageFilterCriteria();
+
+        MyTaskListResponse response = myTasklistService.getDashBoardMyTaskListSummary(
+                UUID.randomUUID(), Pageable.unpaged(), "userName", "vzid", processedEmailCriteria, unProcessedEmailCriteria);
+
+        assertNotNull(response);
+        // Add assertions for the expected response based on mocked data
+    }
+
+    @Test
+    public void testGetDashBoardMyTaskListSummary_ExceptionHandling() {
+        Mockito.when(emailMessageSearchRepository.findAll(any(), any())).thenThrow(new RuntimeException("Test Exception"));
+
+        EmailMessageFilterCriteria processedEmailCriteria = new EmailMessageFilterCriteria();
+        EmailMessageFilterCriteria unProcessedEmailCriteria = new EmailMessageFilterCriteria();
+
+        MyTaskListResponse response = myTasklistService.getDashBoardMyTaskListSummary(
+                UUID.randomUUID(), Pageable.unpaged(), "userName", "vzid", processedEmailCriteria, unProcessedEmailCriteria);
+
+        // Assertions for expected exception handling
+    }
+
+    @Test
+    public void testFillMyTasklistResponseObj() {
+        MyTaskListResponse myTaskListResponse = new MyTaskListResponse();
+        Page<MessagesEntity> mockPage = Mockito.mock(Page.class);
+        Mockito.when(mockPage.getTotalElements()).thenReturn(5L);
+
+        myTasklistService.fillMyTasklistResponseObj(myTaskListResponse, mockPage, DashBoardMyTasklistSearchEnum.MANUALLY_PROCESSED.name());
+
+        // Assertions for the filled MyTaskListResponse object
+    }
+}
