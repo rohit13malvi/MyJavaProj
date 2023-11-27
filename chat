@@ -87,6 +87,18 @@ public class DashBoardInboxSummaryService {
 }
 
 ============
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
+import java.util.UUID;
+
+import static org.junit.Assert.assertNotNull;
 @RunWith(MockitoJUnitRunner.class)
 public class DashBoardInboxSummaryServiceTest {
 
