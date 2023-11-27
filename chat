@@ -1,0 +1,87 @@
+package com.verizon.ucm.interactionmanagement.services.search.emailmessages;
+
+import java.time.Duration;
+import java.time.Instant;
+import java.util.List;
+import java.util.UUID;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+
+import com.verizon.ucm.interactionmanagement.entity.MessagesEntity;
+import com.verizon.ucm.interactionmanagement.enums.DashBoardInboxSearchEnum;
+import com.verizon.ucm.interactionmanagement.handler.DashBoardSummaryHandler;
+import com.verizon.ucm.interactionmanagement.repository.EmailMessageLabelsRepository;
+import com.verizon.ucm.interactionmanagement.repository.EmailMessageSearchRepository;
+import com.verizon.ucm.interactionmanagement.response.dashboard.InboxResponse;
+import com.verizon.ucm.interactionmanagement.specifications.EmailMessageFilterCriteria;
+import com.verizon.ucm.interactionmanagement.specifications.EmailMessageSearchSpecification;
+import com.verizon.ucm.interactionmanagement.specifications.EmailMessageSearchCriteria;
+
+@Service
+public class DashBoardInboxSummaryService {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(DashBoardInboxSummaryService.class);
+
+	@Autowired
+	private EmailMessageSearchRepository emailMessageSearchRepository;
+
+	@Autowired
+	private DashBoardSummaryHandler dashBoardSummaryHandler;
+	
+	@Autowired
+	private EmailMessageLabelsRepository emailMessageLabelsRepository;
+
+	public InboxResponse getDashBoardInboxSummary(UUID uuid, Pageable page, EmailMessageFilterCriteria emailCriteria) {
+
+		LOGGER.info("DashBoardInboxSummaryService# getDashBoardInboxSummary#: inside getDashBoardInboxSummary: uuid={}",uuid);
+		InboxResponse inboxResponse = new InboxResponse();
+
+		try {
+			Instant startTime = Instant.now();
+			EmailMessageSearchCriteria emailMessageSearchCriteria = new EmailMessageSearchCriteria();
+			DashBoardInboxSearchEnum[] dashBoardInboxSearchvalues = DashBoardInboxSearchEnum.values();
+
+			for (DashBoardInboxSearchEnum dashBoardInboxSearch : dashBoardInboxSearchvalues) {
+				String filterColumn = dashBoardInboxSearch.toString();
+				List<EmailMessageFilterCriteria> emailMessageFilterCriteriaList = dashBoardSummaryHandler
+						.prepareSearchCriteria(filterColumn, dashBoardInboxSearch.getSearchKey(), emailCriteria);
+
+				emailMessageSearchCriteria.setFilterMeta(emailMessageFilterCriteriaList);
+				EmailMessageSearchSpecification spec = new EmailMessageSearchSpecification(emailMessageLabelsRepository,
+						emailMessageSearchCriteria);
+
+				Page<MessagesEntity> searchResponse = emailMessageSearchRepository.findAll(spec, page);
+				fillInboxResponseObj(inboxResponse, searchResponse, filterColumn);
+			}
+			
+			LOGGER.info("DashBoardSummaryService# getDashBoardSummary#:end:successfully prepared Inbox dashboard summary for uuid={}, time_taken={}",
+					uuid, Duration.between(startTime, Instant.now()).toMillis());
+		} catch (Exception e) {
+			LOGGER.error(
+					"DashBoardInboxSummaryService# getDashBoardInboxSummary#: Exception occurred while building InboxResponse object: uuid={}, exception={}",
+					uuid, e.getMessage());
+		}
+
+		return inboxResponse;
+	}
+
+	private void fillInboxResponseObj(InboxResponse inboxResponse, Page<MessagesEntity> searchResponse,
+			String filterColumn) {
+		if (searchResponse != null) {
+			Long count = searchResponse.getTotalElements();
+			if (filterColumn.equalsIgnoreCase(DashBoardInboxSearchEnum.isSeen.name())) {
+				inboxResponse.setUnReadCount(count);
+			} else if (filterColumn.equalsIgnoreCase(DashBoardInboxSearchEnum.isLocked.name())) {
+				inboxResponse.setInProgressCount(count);
+			} else if (filterColumn.equalsIgnoreCase(DashBoardInboxSearchEnum.fiber.name())) {
+				inboxResponse.setFiberCount(count);
+			}
+		}
+	}
+
+}
