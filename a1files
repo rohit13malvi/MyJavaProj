@@ -1,0 +1,163 @@
+package com.verizon.ucm.interactionmanagement.services.search.emailmessages;
+
+
+import java.time.Duration;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+
+import com.verizon.ucm.interactionmanagement.entity.MessagesEntity;
+import com.verizon.ucm.interactionmanagement.handler.DashBoardSummaryHandler;
+import com.verizon.ucm.interactionmanagement.repository.EmailMessageLabelsRepository;
+import com.verizon.ucm.interactionmanagement.repository.EmailMessageSearchRepository;
+import com.verizon.ucm.interactionmanagement.specifications.EmailMessageFilterCriteria;
+import com.verizon.ucm.interactionmanagement.specifications.EmailMessageSearchCriteria;
+import com.verizon.ucm.interactionmanagement.specifications.EmailMessageSearchSpecification;
+import com.verizon.ucm.interactionmanagement.util.DateTimeConversionUtil;
+import com.verizon.ucm.interactionmanagement.util.SearchConstants;
+
+@Service
+public class DashBoardProgressTrackerSummaryService {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(DashBoardProgressTrackerSummaryService.class);
+
+	@Autowired
+	private EmailMessageSearchRepository emailMessageSearchRepository;
+
+	@Autowired
+	private DashBoardSummaryHandler dashBoardSummaryHandler;
+	
+	@Autowired
+	private EmailMessageLabelsRepository emailMessageLabelsRepository;
+
+	public Map<String, Map<String, Long>> getDashBoardProgressTrackerSummary(UUID uuid, Pageable page,
+			EmailMessageFilterCriteria processedEmailFilterCriteria,
+			EmailMessageFilterCriteria unProcessedEmailFilterCriteria) {
+
+		LOGGER.info(
+				"DashBoardProgressTrackerSummaryService# getDashBoardProgressTrackerSummary#: inside getDashBoardProgressTrackerSummary: uuid={}",
+				uuid);
+		Map<String, Map<String, Long>> progressTrackerMap = null;
+
+		try {
+			Instant startTime = Instant.now();
+			
+			CompletableFuture<Map<String, Long>> autoProcessedFuture = CompletableFuture
+					.supplyAsync(() -> searchDashBoardProgressTrackerSummary(SearchConstants.AUTOMATICALLY_PROCESSED, processedEmailFilterCriteria));
+			
+			CompletableFuture<Map<String, Long>> unProcessedMapFuture = CompletableFuture
+					.supplyAsync(() ->  searchDashBoardProgressTrackerSummary(SearchConstants.UNPROCESSED, unProcessedEmailFilterCriteria));
+			
+			CompletableFuture<Void> combinedProgressTrackerFuture = CompletableFuture
+					.allOf(autoProcessedFuture, unProcessedMapFuture);
+			
+			combinedProgressTrackerFuture.get();
+
+			Map<String, Long> autoProcessedMap = null;
+			if (autoProcessedFuture.isDone()) {
+				autoProcessedMap = autoProcessedFuture.get();
+			}
+
+			Map<String, Long> unProcessedMap = null;
+			if (unProcessedMapFuture.isDone()) {
+				unProcessedMap = unProcessedMapFuture.get();
+			}
+
+			Set<String> dayMonthKeys = null;
+			if ((autoProcessedMap != null && !autoProcessedMap.isEmpty())
+					|| (unProcessedMap != null && !unProcessedMap.isEmpty())) {
+				dayMonthKeys = new TreeSet<>();
+				dayMonthKeys.addAll(autoProcessedMap.keySet());
+				dayMonthKeys.addAll(unProcessedMap.keySet());
+			}
+
+			if (dayMonthKeys != null && !dayMonthKeys.isEmpty()) {
+				progressTrackerMap = prepareProgressTrackerResponse(dayMonthKeys, autoProcessedMap, unProcessedMap);
+			}
+			
+			LOGGER.info("DashBoardSummaryService# getDashBoardSummary#:end:successfully prepared ProgressTracker dashboard summary for uuid={}, time_taken={}",
+					uuid, Duration.between(startTime, Instant.now()).toMillis());
+
+		} catch (Exception e) {
+			LOGGER.error("DashBoardProgressTrackerSummaryService# getDashBoardProgressTrackerSummary#: Exception occurred while building ProgressTrackerResponse object: uuid={}, exception={}",
+					uuid, e.getMessage());
+		}
+
+		return progressTrackerMap;
+	}
+	
+	private Map<String, Long> searchDashBoardProgressTrackerSummary(String dashBoardStatusSearch,
+			EmailMessageFilterCriteria emailFilterCriteria) {
+
+		EmailMessageSearchCriteria emailMessageSearchCriteria = new EmailMessageSearchCriteria();
+		List<EmailMessageFilterCriteria> emailMessageFilterCriteriaList = new ArrayList<>();
+
+		if (SearchConstants.AUTOMATICALLY_PROCESSED.equalsIgnoreCase(dashBoardStatusSearch)) {
+			emailMessageFilterCriteriaList.add(dashBoardSummaryHandler.buildEmailMessageFilterCriteriaObj(
+					SearchConstants.LABEL_AGE, SearchConstants.HOURS_168.toString(), SearchConstants.EQUALS));
+			emailMessageFilterCriteriaList.add(dashBoardSummaryHandler.buildEmailMessageFilterCriteriaObj(
+					dashBoardStatusSearch, dashBoardStatusSearch, SearchConstants.EQUALS));
+		} else if (SearchConstants.UNPROCESSED.equalsIgnoreCase(dashBoardStatusSearch)) {
+			emailMessageFilterCriteriaList.add(dashBoardSummaryHandler.buildEmailMessageFilterCriteriaObj(
+					SearchConstants.EMAIL_MESSAGE_AGE, SearchConstants.HOURS_168.toString(), SearchConstants.EQUALS));
+		}
+		
+		emailMessageFilterCriteriaList.add(emailFilterCriteria);
+		emailMessageSearchCriteria.setFilterMeta(emailMessageFilterCriteriaList);
+		EmailMessageSearchSpecification spec = new EmailMessageSearchSpecification(emailMessageLabelsRepository,
+				emailMessageSearchCriteria);
+
+		Instant startTime = Instant.now();
+		List<MessagesEntity> messagesEntities = emailMessageSearchRepository.findAll(spec);
+		LOGGER.info(
+				"DashBoardSummaryService# getDashBoardSummary#:end:successfully prepared ProgressTracker-XXXXXXXXXXXXXXXXXXXXX dashboard summary for time_taken={}",
+				Duration.between(startTime, Instant.now()).toMillis());
+		return createProgressTrackerMap(messagesEntities);
+	}
+
+	private Map<String, Long> createProgressTrackerMap(List<MessagesEntity> searchResponse) {
+
+		Map<String, Long> map = new HashMap<>();
+		if (searchResponse != null && !searchResponse.isEmpty()) {
+			for (MessagesEntity messagesEntity : searchResponse) {
+				String dayMonth = DateTimeConversionUtil.formatLocalDateTime(messagesEntity.getCreatedDate(), "LLLdd");
+
+				if (map.containsKey(dayMonth)) {
+					map.put(dayMonth, map.get(dayMonth) + 1);
+				} else {
+					map.put(dayMonth, 1l);
+				}
+			}
+		}
+		return map;
+	}
+	
+	private Map<String, Map<String, Long>> prepareProgressTrackerResponse(Set<String> keys,
+			Map<String, Long> autoProcessedMap, Map<String, Long> unProcessedMap) {
+
+		Map<String, Map<String, Long>> map = new LinkedHashMap<>();
+		for (String key : keys) {
+			if (key != null && !map.containsKey(key)) {
+				Map<String, Long> countMap = new HashMap<>();
+				countMap.put(SearchConstants.AUTOMATICALLY_PROCESSED, autoProcessedMap.get(key));
+				countMap.put(SearchConstants.UNPROCESSED, unProcessedMap.get(key));
+				map.put(key, countMap);
+			}
+		}
+		return map;
+	}
+
+}
