@@ -180,5 +180,33 @@ public class DashBoardProgressTrackerSummaryServiceTest {
         assertEquals(1, result.size());
     }
 }
+-------
+// Service class (or a separate package-private class)
+class DashBoardProgressTrackerHelper {
+    static Map<String, Long> searchDashBoardProgressTrackerSummary(EmailMessageSearchRepository emailMessageSearchRepository, DashBoardSummaryHandler dashBoardSummaryHandler, EmailMessageLabelsRepository emailMessageLabelsRepository, String dashBoardStatusSearch, EmailMessageFilterCriteria emailFilterCriteria) {
+        // Method logic as in DashBoardProgressTrackerSummaryService
+    }
+}
+
+// Test class
+public class DashBoardProgressTrackerSummaryServiceTest {
+
+    @Test
+    public void testSearchDashBoardProgressTrackerSummary() {
+        // Mock dependencies
+        EmailMessageSearchRepository emailMessageSearchRepository = mock(EmailMessageSearchRepository.class);
+        DashBoardSummaryHandler dashBoardSummaryHandler = mock(DashBoardSummaryHandler.class);
+        EmailMessageLabelsRepository emailMessageLabelsRepository = mock(EmailMessageLabelsRepository.class);
+
+        String dashBoardStatusSearch = "SomeStatus";
+        EmailMessageFilterCriteria emailFilterCriteria = new EmailMessageFilterCriteria();
+
+        // Perform the test by directly calling the helper method
+        Map<String, Long> result = DashBoardProgressTrackerHelper.searchDashBoardProgressTrackerSummary(emailMessageSearchRepository, dashBoardSummaryHandler, emailMessageLabelsRepository, dashBoardStatusSearch, emailFilterCriteria);
+
+        // Assertions and checks for the result
+        // assertEquals(...);
+    }
+}
 
 
