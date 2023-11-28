@@ -285,3 +285,66 @@ public class DashBoardProgressTrackerSummaryServiceTest {
         Mockito.verify(logger).error(anyString(), any(), anyString());
     }
 }
+]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]
+
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.slf4j.Logger;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Pageable;
+
+import java.util.*;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+
+@SpringBootTest
+public class DashBoardProgressTrackerSummaryServiceTest {
+
+    @Mock
+    private EmailMessageSearchRepository emailMessageSearchRepository;
+
+    @Mock
+    private DashBoardSummaryHandler dashBoardSummaryHandler;
+
+    @Mock
+    private EmailMessageLabelsRepository emailMessageLabelsRepository;
+
+    @Mock
+    private Logger logger;
+
+    @InjectMocks
+    private DashBoardProgressTrackerSummaryService service;
+
+    @Test
+    public void testGetDashBoardProgressTrackerSummary() {
+        UUID uuid = UUID.randomUUID();
+        Pageable pageable = Mockito.mock(Pageable.class);
+        EmailMessageFilterCriteria processedEmailFilterCriteria = Mockito.mock(EmailMessageFilterCriteria.class);
+        EmailMessageFilterCriteria unProcessedEmailFilterCriteria = Mockito.mock(EmailMessageFilterCriteria.class);
+
+        // Mocking behavior of internal methods
+        Map<String, Long> autoProcessedMap = new HashMap<>();
+        autoProcessedMap.put("key1", 10L);
+
+        Map<String, Long> unProcessedMap = new HashMap<>();
+        unProcessedMap.put("key2", 5L);
+
+        // Mocking the behavior of external dependencies
+        when(dashBoardSummaryHandler.buildEmailMessageFilterCriteriaObj(any(), any(), any())).thenReturn(new EmailMessageFilterCriteria());
+        when(emailMessageSearchRepository.findAll(any())).thenReturn(new ArrayList<>());
+        when(emailMessageLabelsRepository.findAll()).thenReturn(new ArrayList<>());
+
+        // Method invocation
+        Map<String, Map<String, Long>> result = service.getDashBoardProgressTrackerSummary(uuid, pageable, processedEmailFilterCriteria, unProcessedEmailFilterCriteria);
+
+        // Assertions and verifications
+        assertEquals(2, result.size());
+        Mockito.verify(logger).info(anyString(), any(), anyLong());
+        Mockito.verify(logger).error(anyString(), any(), anyString());
+    }
+}
+
