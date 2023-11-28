@@ -57,3 +57,58 @@ public class DashBoardProgressTrackerSummaryServiceTest {
 
 ----------------
 Cannot resolve method 'thenReturn(CompletableFuture<Map<String, Long>>, CompletableFuture<Map<String, Long>>)'
+=====
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.springframework.data.domain.Pageable;
+
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
+public class DashBoardProgressTrackerSummaryServiceTest {
+
+    @Mock
+    private EmailMessageSearchRepository emailMessageSearchRepository;
+
+    @Mock
+    private DashBoardSummaryHandler dashBoardSummaryHandler;
+
+    @Mock
+    private EmailMessageLabelsRepository emailMessageLabelsRepository;
+
+    @InjectMocks
+    private DashBoardProgressTrackerSummaryService service;
+
+    @Test
+    public void testGetDashBoardProgressTrackerSummary() throws Exception {
+        MockitoAnnotations.initMocks(this); // Initialize mocks
+
+        // Mock behavior of the repository or handler methods as needed
+        when(emailMessageSearchRepository.findAll(any())).thenReturn(/* your mocked data */);
+        when(dashBoardSummaryHandler.buildEmailMessageFilterCriteriaObj(any(), any(), any())).thenReturn(/* your mocked criteria */);
+
+        // Mock the CompletableFuture return values
+        CompletableFuture<Map<String, Long>> autoProcessedFuture = CompletableFuture.completedFuture(/* your mocked data */);
+        CompletableFuture<Map<String, Long>> unProcessedMapFuture = CompletableFuture.completedFuture(/* your mocked data */);
+
+        when(service.searchDashBoardProgressTrackerSummary(any(), any())).thenReturn(/* your mocked data */);
+        when(service.prepareProgressTrackerResponse(any(), any(), any())).thenReturn(/* your mocked data */);
+
+        // Call the method to test
+        UUID uuid = UUID.randomUUID();
+        Pageable pageable = /* create a Pageable instance */;
+        EmailMessageFilterCriteria processedCriteria = /* create a criteria */;
+        EmailMessageFilterCriteria unProcessedCriteria = /* create a criteria */;
+
+        Map<String, Map<String, Long>> result = service.getDashBoardProgressTrackerSummary(uuid, pageable, processedCriteria, unProcessedCriteria);
+
+        // Perform assertions or verifications based on the result
+    }
+}
+
