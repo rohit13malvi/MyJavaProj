@@ -1,0 +1,43 @@
+import org.junit.jupiter.api.Test;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+public class DashBoardProgressTrackerSummaryServiceTest {
+
+    @Test
+    public void testCreateProgressTrackerMap() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        // Mocking input parameters
+        List<MessagesEntity> searchResponse = new ArrayList<>();
+        MessagesEntity messagesEntity1 = new MessagesEntity();
+        messagesEntity1.setCreatedDate(LocalDateTime.of(2023, 11, 30, 10, 0));
+
+        MessagesEntity messagesEntity2 = new MessagesEntity();
+        messagesEntity2.setCreatedDate(LocalDateTime.of(2023, 11, 30, 12, 0));
+
+        searchResponse.add(messagesEntity1);
+        searchResponse.add(messagesEntity2);
+
+        // Get the method using reflection
+        Class<?> clazz = DashBoardProgressTrackerSummaryService.class;
+        Method method = clazz.getDeclaredMethod("createProgressTrackerMap", List.class);
+        method.setAccessible(true); // Make the private method accessible for testing
+
+        // Perform test
+        DashBoardProgressTrackerSummaryService progressTrackerService = new DashBoardProgressTrackerSummaryService();
+        @SuppressWarnings("unchecked")
+        Map<String, Long> result = (Map<String, Long>) method.invoke(progressTrackerService, searchResponse);
+
+        // Assertions
+        assertEquals(2, result.size());
+        assertEquals(1L, result.get("Nov30")); // Check the count for a specific day
+        // Add more assertions as needed
+    }
+}
