@@ -1,1 +1,57 @@
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.slf4j.Logger;
+import org.springframework.boot.test.context.SpringBootTest;
+
+import java.time.Duration;
+import java.time.Instant;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+
+@SpringBootTest
+public class DashBoardProgressTrackerSummaryServiceTest {
+
+    @Mock
+    private EmailMessageSearchRepository emailMessageSearchRepository;
+
+    @Mock
+    private DashBoardSummaryHandler dashBoardSummaryHandler;
+
+    @Mock
+    private EmailMessageLabelsRepository emailMessageLabelsRepository;
+
+    @Mock
+    private Logger logger;
+
+    @InjectMocks
+    private DashBoardProgressTrackerSummaryService service;
+
+    @Test
+    public void testGetDashBoardProgressTrackerSummary() throws Exception {
+        CompletableFuture<Map<String, Long>> autoProcessedFuture = CompletableFuture.completedFuture(new HashMap<>());
+        CompletableFuture<Map<String, Long>> unProcessedMapFuture = CompletableFuture.completedFuture(new HashMap<>());
+
+        when(autoProcessedFuture.isDone()).thenReturn(true);
+        when(autoProcessedFuture.get()).thenReturn(new HashMap<>());
+
+        when(unProcessedMapFuture.isDone()).thenReturn(true);
+        when(unProcessedMapFuture.get()).thenReturn(new HashMap<>());
+
+        when(CompletableFuture.supplyAsync(any())).thenReturn(autoProcessedFuture, unProcessedMapFuture);
+
+        Map<String, Map<String, Long>> result = service.getDashBoardProgressTrackerSummary(
+                /* Provide your UUID, Pageable, EmailMessageFilterCriteria instances */);
+
+        assertEquals(new HashMap<>(), result);
+    }
+}
 
