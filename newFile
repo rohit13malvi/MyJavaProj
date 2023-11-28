@@ -488,3 +488,65 @@ public class DashBoardProgressTrackerSummaryServiceTest {
     }
 }
 
+dkkkkkkkkkkkkkkkkkkkkkkkkkk
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.slf4j.Logger;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.util.ReflectionTestUtils;
+
+import java.util.*;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+
+@SpringBootTest
+public class DashBoardProgressTrackerSummaryServiceTest {
+
+    // ... (Other mocked dependencies)
+
+    @Mock
+    private Logger logger;
+
+    @InjectMocks
+    private DashBoardProgressTrackerSummaryService service;
+
+    @Test
+    public void testGetDashBoardProgressTrackerSummary() throws Exception {
+        // ... (Same setup as before)
+
+        // Mocking the private methods indirectly using ReflectionTestUtils
+        ReflectionTestUtils.setField(service, "emailMessageSearchRepository", emailMessageSearchRepository);
+        ReflectionTestUtils.setField(service, "dashBoardSummaryHandler", dashBoardSummaryHandler);
+        ReflectionTestUtils.setField(service, "emailMessageLabelsRepository", emailMessageLabelsRepository);
+
+        Map<String, Long> autoProcessedMap = new HashMap<>();
+        autoProcessedMap.put("key1", 10L);
+
+        Map<String, Long> unProcessedMap = new HashMap<>();
+        unProcessedMap.put("key2", 5L);
+
+        when(service.prepareProgressTrackerResponse(any(), any(), any())).thenCallRealMethod();
+
+        // Access and test the private method
+        Set<String> keys = new HashSet<>(Arrays.asList("key1", "key2"));
+        Map<String, Map<String, Long>> result = invokePrivateMethod(service, "prepareProgressTrackerResponse", keys, autoProcessedMap, unProcessedMap);
+
+        assertEquals(2, result.size());
+        Mockito.verify(logger).info(anyString(), any(), any());
+        Mockito.verify(logger, Mockito.never()).error(anyString(), any(), any());
+    }
+
+    private Map<String, Map<String, Long>> invokePrivateMethod(Object object, String methodName, Object... args) throws Exception {
+        Class<?>[] argClasses = new Class[args.length];
+        for (int i = 0; i < args.length; i++) {
+            argClasses[i] = args[i].getClass();
+        }
+        java.lang.reflect.Method method = object.getClass().getDeclaredMethod(methodName, argClasses);
+        method.setAccessible(true);
+        return (Map<String, Map<String, Long>>) method.invoke(object, args);
+    }
+}
