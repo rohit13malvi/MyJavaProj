@@ -161,3 +161,116 @@ public class DashBoardProgressTrackerSummaryService {
 	}
 
 }
+=====
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Pageable;
+
+@ExtendWith(MockitoExtension.class)
+public class DashBoardProgressTrackerSummaryServiceTest {
+
+    @Mock
+    private EmailMessageSearchRepository emailMessageSearchRepository;
+
+    @Mock
+    private DashBoardSummaryHandler dashBoardSummaryHandler;
+
+    @Mock
+    private EmailMessageLabelsRepository emailMessageLabelsRepository;
+
+    @InjectMocks
+    private DashBoardProgressTrackerSummaryService progressTrackerService;
+
+    private UUID uuid;
+    private Pageable pageable;
+
+    @BeforeEach
+    public void setup() {
+        uuid = UUID.randomUUID();
+        pageable = mock(Pageable.class);
+    }
+
+    @Test
+    public void testGetDashBoardProgressTrackerSummary_Success() throws Exception {
+        // Mocking necessary behavior for successful execution
+        Map<String, Long> autoProcessedMap = new HashMap<>();
+        autoProcessedMap.put("key1", 1L);
+        Map<String, Long> unProcessedMap = new HashMap<>();
+        unProcessedMap.put("key2", 2L);
+
+        when(dashBoardSummaryHandler.buildEmailMessageFilterCriteriaObj(any(), any(), any())).thenReturn(new EmailMessageFilterCriteria());
+        when(emailMessageSearchRepository.findAll(any())).thenReturn(new ArrayList<>());
+        when(dashBoardSummaryHandler.buildEmailMessageFilterCriteriaObj(any(), any(), any())).thenReturn(new EmailMessageFilterCriteria());
+        when(emailMessageSearchRepository.findAll(any())).thenReturn(new ArrayList<>());
+        when(dashBoardSummaryHandler.buildEmailMessageFilterCriteriaObj(any(), any(), any())).thenReturn(new EmailMessageFilterCriteria());
+        when(emailMessageSearchRepository.findAll(any())).thenReturn(new ArrayList<>());
+
+        CompletableFuture<Map<String, Long>> autoProcessedFuture = CompletableFuture.completedFuture(autoProcessedMap);
+        CompletableFuture<Map<String, Long>> unProcessedMapFuture = CompletableFuture.completedFuture(unProcessedMap);
+        CompletableFuture<Void> combinedProgressTrackerFuture = CompletableFuture.allOf(autoProcessedFuture, unProcessedMapFuture);
+
+        when(autoProcessedFuture.get()).thenReturn(autoProcessedMap);
+        when(unProcessedMapFuture.get()).thenReturn(unProcessedMap);
+        when(combinedProgressTrackerFuture.get()).thenReturn(null);
+
+        // Perform test
+        Map<String, Map<String, Long>> result = progressTrackerService.getDashBoardProgressTrackerSummary(uuid, pageable, new EmailMessageFilterCriteria(), new EmailMessageFilterCriteria());
+
+        // Assertions
+        // Add assertions based on the expected result from the service method
+        // For example:
+        assertNotNull(result);
+        // Check other conditions as needed
+    }
+
+    // Add more test cases for different scenarios
+}
+===========
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Pageable;
+
+@ExtendWith(MockitoExtension.class)
+public class DashBoardProgressTrackerSummaryServiceTest {
+
+    // Existing mocks and injectMocks...
+
+    @Test
+    public void testGetDashBoardProgressTrackerSummary_ExceptionHandling() {
+        // Mocking necessary behavior for exception handling
+        when(emailMessageSearchRepository.findAll(any())).thenThrow(new RuntimeException("Simulating an exception"));
+
+        // Perform test
+        Map<String, Map<String, Long>> result = progressTrackerService.getDashBoardProgressTrackerSummary(uuid, pageable, new EmailMessageFilterCriteria(), new EmailMessageFilterCriteria());
+
+        // Assertions for catch block scenario
+        assertNull(result); // Assert that the result is null or in an expected state after catching the exception
+        // Add assertions or verifications related to the log messages or the behavior in the catch block
+        // For example, verify that the LOGGER.error method was called with the expected parameters
+    }
+
+    // Other test cases...
+}
+
