@@ -683,3 +683,52 @@ public class DashBoardProgressTrackerSummaryServiceTest {
         // Add more assertions as needed to cover other scenarios
     }
 }
+ppppppppppppppp
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import java.util.*;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+public class DashBoardProgressTrackerSummaryServiceTest {
+
+    private DashBoardProgressTrackerSummaryService progressTrackerService;
+
+    @BeforeEach
+    public void setup() {
+        progressTrackerService = new DashBoardProgressTrackerSummaryService();
+    }
+
+    @Test
+    public void testPrepareProgressTrackerResponse() {
+        // Mocking input parameters
+        Set<String> keys = new HashSet<>(Arrays.asList("key1", "key2", "key3"));
+        Map<String, Long> autoProcessedMap = new HashMap<>();
+        autoProcessedMap.put("key1", 10L);
+        autoProcessedMap.put("key2", 20L);
+        autoProcessedMap.put("key4", 40L); // To demonstrate an unprocessed key
+
+        Map<String, Long> unProcessedMap = new HashMap<>();
+        unProcessedMap.put("key2", 5L);
+        unProcessedMap.put("key3", 15L);
+        unProcessedMap.put("key4", 25L);
+
+        // Perform test
+        Map<String, Map<String, Long>> result = progressTrackerService.prepareProgressTrackerResponse(keys, autoProcessedMap, unProcessedMap);
+
+        // Assertions
+        assertEquals(3, result.size()); // Ensure all keys are processed
+        assertEquals(2, result.get("key1").size()); // Check the count map size for a processed key
+        assertEquals(2, result.get("key2").size()); // Check the count map size for a key processed and unprocessed
+        assertEquals(2, result.get("key3").size()); // Check the count map size for an unprocessed key
+        assertEquals(2, result.get("key4").size()); // Check the count map size for a key that is both processed and unprocessed
+        assertEquals(10L, result.get("key1").get(SearchConstants.AUTOMATICALLY_PROCESSED)); // Check the count for processed key1
+        assertEquals(20L, result.get("key2").get(SearchConstants.AUTOMATICALLY_PROCESSED)); // Check the count for processed key2
+        assertEquals(5L, result.get("key2").get(SearchConstants.UNPROCESSED)); // Check the count for unprocessed key2
+        assertEquals(15L, result.get("key3").get(SearchConstants.UNPROCESSED)); // Check the count for unprocessed key3
+        // Add more assertions as needed
+    }
+}
