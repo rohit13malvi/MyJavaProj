@@ -630,3 +630,56 @@ public class DashBoardProgressTrackerSummaryServiceTest {
 
 }
 
+-------------
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.*;
+
+public class DashBoardProgressTrackerSummaryServiceTest {
+
+    private DashBoardProgressTrackerSummaryService progressTrackerService;
+
+    @BeforeEach
+    public void setup() {
+        progressTrackerService = new DashBoardProgressTrackerSummaryService();
+    }
+
+    @Test
+    public void testCreateProgressTrackerMap() {
+        // Mocking MessagesEntity objects
+        MessagesEntity messagesEntity1 = mock(MessagesEntity.class);
+        when(messagesEntity1.getCreatedDate()).thenReturn(LocalDateTime.of(2023, 11, 30, 10, 0));
+
+        MessagesEntity messagesEntity2 = mock(MessagesEntity.class);
+        when(messagesEntity2.getCreatedDate()).thenReturn(LocalDateTime.of(2023, 11, 30, 12, 0));
+
+        // Creating a list with mocked MessagesEntity objects
+        List<MessagesEntity> searchResponse = new ArrayList<>();
+        searchResponse.add(messagesEntity1);
+        searchResponse.add(messagesEntity2);
+
+        // Mocking DateTimeConversionUtil behavior
+        when(DateTimeConversionUtil.formatLocalDateTime(any(LocalDateTime.class), anyString())).thenAnswer(invocation -> {
+            LocalDateTime dateTime = invocation.getArgument(0);
+            if (invocation.getArgument(1).equals("LLLdd")) {
+                return dateTime.getMonth().toString().substring(0, 3) + String.format("%02d", dateTime.getDayOfMonth());
+            }
+            return null;
+        });
+
+        // Perform the test
+        Map<String, Long> result = progressTrackerService.createProgressTrackerMap(searchResponse);
+
+        // Assertions
+        assertEquals(2, result.size());
+        assertEquals(1L, result.get("Nov30")); // Ensure the count for the specific day is correct
+        // Add more assertions as needed to cover other scenarios
+    }
+}
