@@ -137,4 +137,48 @@ public class DashBoardProgressTrackerSummaryServiceTest {
         assertEquals(1, result.size());
     }
 }
+-----
+import org.junit.jupiter.api.Test;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+public class DashBoardProgressTrackerSummaryServiceTest {
+
+    @Test
+    public void testSearchDashBoardProgressTrackerSummary() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        EmailMessageSearchRepository emailMessageSearchRepository = mock(EmailMessageSearchRepository.class);
+        DashBoardSummaryHandler dashBoardSummaryHandler = mock(DashBoardSummaryHandler.class);
+        EmailMessageLabelsRepository emailMessageLabelsRepository = mock(EmailMessageLabelsRepository.class);
+
+        String dashBoardStatusSearch = "SomeStatus";
+        EmailMessageFilterCriteria emailFilterCriteria = new EmailMessageFilterCriteria();
+
+        List<MessagesEntity> messagesEntities = new ArrayList<>();
+        MessagesEntity mockMessageEntity = new MessagesEntity();
+        messagesEntities.add(mockMessageEntity);
+
+        when(dashBoardSummaryHandler.buildEmailMessageFilterCriteriaObj(any(), any(), any())).thenReturn(new EmailMessageFilterCriteria());
+        when(emailMessageSearchRepository.findAll(any())).thenReturn(messagesEntities);
+
+        DashBoardProgressTrackerSummaryService progressTrackerService = new DashBoardProgressTrackerSummaryService(emailMessageSearchRepository, dashBoardSummaryHandler, emailMessageLabelsRepository);
+
+        Class<?> clazz = DashBoardProgressTrackerSummaryService.class;
+        Method method = clazz.getDeclaredMethod("searchDashBoardProgressTrackerSummary", String.class, EmailMessageFilterCriteria.class);
+        method.setAccessible(true);
+
+        @SuppressWarnings("unchecked")
+        List<MessagesEntity> result = (List<MessagesEntity>) method.invoke(progressTrackerService, dashBoardStatusSearch, emailFilterCriteria);
+
+        assertEquals(1, result.size());
+    }
+}
+
 
