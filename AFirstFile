@@ -4,38 +4,46 @@ import static org.mockito.Mockito.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Pageable;
 
+@SpringBootTest
 class DashBoardProgressTrackerSummaryServiceTest {
 
+    @Autowired
     private DashBoardProgressTrackerSummaryService serviceUnderTest;
+
+    @Mock
     private EmailMessageSearchRepository emailMessageSearchRepositoryMock;
+
+    @Mock
     private DashBoardSummaryHandler dashBoardSummaryHandlerMock;
+
+    @Mock
     private EmailMessageLabelsRepository emailMessageLabelsRepositoryMock;
 
     @BeforeEach
     void setUp() {
-        emailMessageSearchRepositoryMock = mock(EmailMessageSearchRepository.class);
-        dashBoardSummaryHandlerMock = mock(DashBoardSummaryHandler.class);
-        emailMessageLabelsRepositoryMock = mock(EmailMessageLabelsRepository.class);
+        MockitoAnnotations.openMocks(this);
 
-        serviceUnderTest = new DashBoardProgressTrackerSummaryService();
-        serviceUnderTest.setEmailMessageSearchRepository(emailMessageSearchRepositoryMock);
-        serviceUnderTest.setDashBoardSummaryHandler(dashBoardSummaryHandlerMock);
-        serviceUnderTest.setEmailMessageLabelsRepository(emailMessageLabelsRepositoryMock);
+        serviceUnderTest.emailMessageSearchRepository = emailMessageSearchRepositoryMock;
+        serviceUnderTest.dashBoardSummaryHandler = dashBoardSummaryHandlerMock;
+        serviceUnderTest.emailMessageLabelsRepository = emailMessageLabelsRepositoryMock;
     }
 
     @Test
     void testGetDashBoardProgressTrackerSummary_Success() {
-        // Mock input data
         UUID uuid = UUID.randomUUID();
         Pageable page = mock(Pageable.class);
-        // ... mock filter criteria objects
 
-        // Mock the searchDashBoardProgressTrackerSummary method
         Map<String, Long> processedData = new HashMap<>();
         processedData.put("Key1", 10L);
         processedData.put("Key2", 20L);
@@ -48,14 +56,13 @@ class DashBoardProgressTrackerSummaryServiceTest {
         when(emailMessageSearchRepositoryMock.searchDashBoardProgressTrackerSummary(eq(SearchConstants.UNPROCESSED), any()))
             .thenReturn(unProcessedData);
 
-        // Call the method under test
         Map<String, Map<String, Long>> result = serviceUnderTest.getDashBoardProgressTrackerSummary(uuid, page, null, null);
 
-        // Assertions
         assertNotNull(result);
-        // Add more assertions as needed
+
+        verify(emailMessageSearchRepositoryMock, times(1)).searchDashBoardProgressTrackerSummary(eq(SearchConstants.AUTOMATICALLY_PROCESSED), any());
+        verify(emailMessageSearchRepositoryMock, times(1)).searchDashBoardProgressTrackerSummary(eq(SearchConstants.UNPROCESSED), any());
     }
 
-    // Add more test cases to cover exception handling, different scenarios, etc.
+    // Add more test cases to cover exception handling, edge cases, etc.
 }
-
