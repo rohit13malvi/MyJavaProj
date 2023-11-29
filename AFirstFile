@@ -1,1 +1,61 @@
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.data.domain.Pageable;
+
+class DashBoardProgressTrackerSummaryServiceTest {
+
+    private DashBoardProgressTrackerSummaryService serviceUnderTest;
+    private EmailMessageSearchRepository emailMessageSearchRepositoryMock;
+    private DashBoardSummaryHandler dashBoardSummaryHandlerMock;
+    private EmailMessageLabelsRepository emailMessageLabelsRepositoryMock;
+
+    @BeforeEach
+    void setUp() {
+        emailMessageSearchRepositoryMock = mock(EmailMessageSearchRepository.class);
+        dashBoardSummaryHandlerMock = mock(DashBoardSummaryHandler.class);
+        emailMessageLabelsRepositoryMock = mock(EmailMessageLabelsRepository.class);
+
+        serviceUnderTest = new DashBoardProgressTrackerSummaryService();
+        serviceUnderTest.setEmailMessageSearchRepository(emailMessageSearchRepositoryMock);
+        serviceUnderTest.setDashBoardSummaryHandler(dashBoardSummaryHandlerMock);
+        serviceUnderTest.setEmailMessageLabelsRepository(emailMessageLabelsRepositoryMock);
+    }
+
+    @Test
+    void testGetDashBoardProgressTrackerSummary_Success() {
+        // Mock input data
+        UUID uuid = UUID.randomUUID();
+        Pageable page = mock(Pageable.class);
+        // ... mock filter criteria objects
+
+        // Mock the searchDashBoardProgressTrackerSummary method
+        Map<String, Long> processedData = new HashMap<>();
+        processedData.put("Key1", 10L);
+        processedData.put("Key2", 20L);
+        when(emailMessageSearchRepositoryMock.searchDashBoardProgressTrackerSummary(eq(SearchConstants.AUTOMATICALLY_PROCESSED), any()))
+            .thenReturn(processedData);
+
+        Map<String, Long> unProcessedData = new HashMap<>();
+        unProcessedData.put("Key3", 5L);
+        unProcessedData.put("Key4", 15L);
+        when(emailMessageSearchRepositoryMock.searchDashBoardProgressTrackerSummary(eq(SearchConstants.UNPROCESSED), any()))
+            .thenReturn(unProcessedData);
+
+        // Call the method under test
+        Map<String, Map<String, Long>> result = serviceUnderTest.getDashBoardProgressTrackerSummary(uuid, page, null, null);
+
+        // Assertions
+        assertNotNull(result);
+        // Add more assertions as needed
+    }
+
+    // Add more test cases to cover exception handling, different scenarios, etc.
+}
 
