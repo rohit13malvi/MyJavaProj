@@ -120,3 +120,12 @@ public class DashBoardProgressTrackerSummaryServiceTest {
                 new Object[]{keys, autoProcessedMap, unProcessedMap});
     }
 }
+-------
+when(dashBoardSummaryHandler.buildEmailMessageFilterCriteriaObj(
+        eq(SearchConstants.LABEL_AGE), eq(SearchConstants.HOURS_168.toString()), eq(SearchConstants.EQUALS)))
+        .thenReturn(new EmailMessageFilterCriteria());
+when(dashBoardSummaryHandler.buildEmailMessageFilterCriteriaObj(
+        eq(SearchConstants.UNPROCESSED), eq(SearchConstants.UNPROCESSED), eq(SearchConstants.EQUALS)))
+        .thenReturn(new EmailMessageFilterCriteria());
+when(emailMessageSearchRepository.findAll(any(EmailMessageSearchSpecification.class)))
+        .thenReturn(Collections.emptyList());
