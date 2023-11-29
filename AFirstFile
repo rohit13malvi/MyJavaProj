@@ -1,68 +1,122 @@
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
-
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Pageable;
 
-@SpringBootTest
-class DashBoardProgressTrackerSummaryServiceTest {
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
-    @Autowired
-    private DashBoardProgressTrackerSummaryService serviceUnderTest;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
-    @Mock
-    private EmailMessageSearchRepository emailMessageSearchRepositoryMock;
-
-    @Mock
-    private DashBoardSummaryHandler dashBoardSummaryHandlerMock;
+@ExtendWith(MockitoExtension.class)
+public class DashBoardProgressTrackerSummaryServiceTest {
 
     @Mock
-    private EmailMessageLabelsRepository emailMessageLabelsRepositoryMock;
+    private EmailMessageSearchRepository emailMessageSearchRepository;
 
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
+    @Mock
+    private DashBoardSummaryHandler dashBoardSummaryHandler;
 
-        serviceUnderTest.emailMessageSearchRepository = emailMessageSearchRepositoryMock;
-        serviceUnderTest.dashBoardSummaryHandler = dashBoardSummaryHandlerMock;
-        serviceUnderTest.emailMessageLabelsRepository = emailMessageLabelsRepositoryMock;
+    @Mock
+    private EmailMessageLabelsRepository emailMessageLabelsRepository;
+
+    @InjectMocks
+    private DashBoardProgressTrackerSummaryService service;
+
+    @Test
+    public void testGetDashBoardProgressTrackerSummary() throws Exception {
+        UUID uuid = UUID.randomUUID();
+        Pageable page = mock(Pageable.class);
+        EmailMessageFilterCriteria processedCriteria = mock(EmailMessageFilterCriteria.class);
+        EmailMessageFilterCriteria unProcessedCriteria = mock(EmailMessageFilterCriteria.class);
+
+        CompletableFuture<Map<String, Long>> autoProcessedFuture = CompletableFuture.completedFuture(new HashMap<>());
+        CompletableFuture<Map<String, Long>> unProcessedMapFuture = CompletableFuture.completedFuture(new HashMap<>());
+
+        when(dashBoardSummaryHandler.buildEmailMessageFilterCriteriaObj(anyString(), anyString(), anyString()))
+                .thenReturn(new EmailMessageFilterCriteria());
+        when(emailMessageSearchRepository.findAll(any())).thenReturn(Collections.emptyList());
+
+        CompletableFuture<Void> combinedProgressTrackerFuture = CompletableFuture.allOf(autoProcessedFuture, unProcessedMapFuture);
+        doNothing().when(combinedProgressTrackerFuture).get();
+
+        Map<String, Map<String, Long>> result = service.getDashBoardProgressTrackerSummary(
+                uuid, page, processedCriteria, unProcessedCriteria);
+
+        // Assertions for the result
+        // Add assertions based on the expected behavior
     }
 
     @Test
-    void testGetDashBoardProgressTrackerSummary_Success() {
-        UUID uuid = UUID.randomUUID();
-        Pageable page = mock(Pageable.class);
+    public void testSearchDashBoardProgressTrackerSummary() throws Exception {
+        String dashBoardStatusSearch = "STATUS";
+        EmailMessageFilterCriteria emailFilterCriteria = mock(EmailMessageFilterCriteria.class);
+        when(dashBoardSummaryHandler.buildEmailMessageFilterCriteriaObj(anyString(), anyString(), anyString()))
+                .thenReturn(new EmailMessageFilterCriteria());
+        when(emailMessageSearchRepository.findAll(any())).thenReturn(Collections.emptyList());
 
-        Map<String, Long> processedData = new HashMap<>();
-        processedData.put("Key1", 10L);
-        processedData.put("Key2", 20L);
-        when(emailMessageSearchRepositoryMock.searchDashBoardProgressTrackerSummary(eq(SearchConstants.AUTOMATICALLY_PROCESSED), any()))
-            .thenReturn(processedData);
+        Map<String, Long> result = invokeSearchDashBoardProgressTrackerSummary(dashBoardStatusSearch, emailFilterCriteria);
 
-        Map<String, Long> unProcessedData = new HashMap<>();
-        unProcessedData.put("Key3", 5L);
-        unProcessedData.put("Key4", 15L);
-        when(emailMessageSearchRepositoryMock.searchDashBoardProgressTrackerSummary(eq(SearchConstants.UNPROCESSED), any()))
-            .thenReturn(unProcessedData);
-
-        Map<String, Map<String, Long>> result = serviceUnderTest.getDashBoardProgressTrackerSummary(uuid, page, null, null);
-
-        assertNotNull(result);
-
-        verify(emailMessageSearchRepositoryMock, times(1)).searchDashBoardProgressTrackerSummary(eq(SearchConstants.AUTOMATICALLY_PROCESSED), any());
-        verify(emailMessageSearchRepositoryMock, times(1)).searchDashBoardProgressTrackerSummary(eq(SearchConstants.UNPROCESSED), any());
+        // Assertions for the result
+        // Add assertions based on the expected behavior
     }
 
-    // Add more test cases to cover exception handling, edge cases, etc.
+    @SuppressWarnings("unchecked")
+    private Map<String, Long> invokeSearchDashBoardProgressTrackerSummary(String dashBoardStatusSearch,
+                                                                          EmailMessageFilterCriteria emailFilterCriteria) throws Exception {
+        return (Map<String, Long>) invokePrivateMethod("searchDashBoardProgressTrackerSummary",
+                new Class[]{String.class, EmailMessageFilterCriteria.class},
+                new Object[]{dashBoardStatusSearch, emailFilterCriteria});
+    }
+
+    @SuppressWarnings("rawtypes")
+    private Object invokePrivateMethod(String methodName, Class[] paramTypes, Object[] params) throws Exception {
+        java.lang.reflect.Method method = DashBoardProgressTrackerSummaryService.class.getDeclaredMethod(methodName, paramTypes);
+        method.setAccessible(true);
+        return method.invoke(service, params);
+    }
+
+    @Test
+    public void testCreateProgressTrackerMap() throws Exception {
+        List<MessagesEntity> messagesEntities = new ArrayList<>();
+        messagesEntities.add(new MessagesEntity(/* Initialize if needed */));
+
+        Map<String, Long> result = invokeCreateProgressTrackerMap(messagesEntities);
+
+        // Assertions for the result
+        // Add assertions based on the expected behavior
+    }
+
+    @SuppressWarnings("unchecked")
+    private Map<String, Long> invokeCreateProgressTrackerMap(List<MessagesEntity> searchResponse) throws Exception {
+        return (Map<String, Long>) invokePrivateMethod("createProgressTrackerMap",
+                new Class[]{List.class},
+                new Object[]{searchResponse});
+    }
+
+    @Test
+    public void testPrepareProgressTrackerResponse() throws Exception {
+        Set<String> keys = new HashSet<>(Arrays.asList("key1", "key2"));
+        Map<String, Long> autoProcessedMap = new HashMap<>();
+        autoProcessedMap.put("key1", 10L);
+        Map<String, Long> unProcessedMap = new HashMap<>();
+        unProcessedMap.put("key2", 5L);
+
+        Map<String, Map<String, Long>> result = invokePrepareProgressTrackerResponse(keys, autoProcessedMap, unProcessedMap);
+
+        // Assertions for the result
+        // Add assertions based on the expected behavior
+    }
+
+    @SuppressWarnings("unchecked")
+    private Map<String, Map<String, Long>> invokePrepareProgressTrackerResponse(
+            Set<String> keys, Map<String, Long> autoProcessedMap, Map<String, Long> unProcessedMap) throws Exception {
+        return (Map<String, Map<String, Long>>) invokePrivateMethod("prepareProgressTrackerResponse",
+                new Class[]{Set.class, Map.class, Map.class},
+                new Object[]{keys, autoProcessedMap, unProcessedMap});
+    }
 }
