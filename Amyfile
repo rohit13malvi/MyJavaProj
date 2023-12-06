@@ -1,0 +1,19 @@
+ if(editAttributesDTO.getOutageUOM() != null){
+            EmailMessageExtractionAuditLog emailMessageExtractionAuditLog = new EmailMessageExtractionAuditLog();
+            emailMessageExtraction.setOutageDurationUom(editAttributesDTO.getOutageUOM().get(newValue));
+            emailMessageExtractionAuditLog.setAction("Edit");
+            emailMessageExtractionAuditLog.setItemChanged("Outage UOM");
+            emailMessageExtractionAuditLog.setModifiedBy(editAttributesDTO.getModifiedBy());
+            emailMessageExtractionAuditLog.setModifiedDate(editAttributesDTO.getModifiedDate());
+            emailMessageExtractionAuditLog.setOldValue(editAttributesDTO.getOutageUOM().get(oldValue));
+            emailMessageExtractionAuditLog.setNewValue(editAttributesDTO.getOutageUOM().get(newValue));
+            emailMessageExtractionAuditLog.setEmailMessageExtractionId(email_message_extraction_id);
+            emailMessageExtractionAuditLogRepository.save(emailMessageExtractionAuditLog);
+            action[0]=true;
+            LOGGER.info("editAttributes :Outage UOM details was updated: uuid={}",uuid);
+        }
+        if(editAttributesDTO.getNumberOfOutages() != null){
+            EmailMessageExtractionAuditLog emailMessageExtractionAuditLog = new EmailMessageExtractionAuditLog();
+            String numberOfOutage= (String.valueOf(editAttributesDTO.getNumberOfOutages())).;
+            emailMessageExtraction.setOutageNumber (numberOfOutage.getget(String.valueOf()newValue));
+            emailMessageExtractionAuditLog.setAction("Edit");
