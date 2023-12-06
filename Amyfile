@@ -41,3 +41,36 @@ if (editAttributesDTO.getNumberOfOutages() != null) { // Assuming getNumberOfOut
         LOGGER.info("editAttributes: Number of Outages details were updated: uuid={}", uuid);
     }
 }
+===
+String newValue = "newValue";
+String oldValue = "oldValue";
+
+if (editAttributesDTO.getNumberOfOutages() != null) {
+    int newNumberOfOutages = Integer.parseInt(newValue);
+    int oldNumberOfOutages = Integer.parseInt(oldValue);
+
+    int numberOfOutagesFromDTO = editAttributesDTO.getNumberOfOutages();
+
+    if (numberOfOutagesFromDTO != oldNumberOfOutages) {
+        EmailMessageExtractionAuditLog emailMessageExtractionAuditLog = new EmailMessageExtractionAuditLog();
+
+        // Convert numberOfOutagesFromDTO to string
+        String numberOfOutagesAsString = String.valueOf(numberOfOutagesFromDTO);
+
+        // Set NumberOfOutages using converted string
+        emailMessageExtraction.setNumberOfOutages(numberOfOutagesAsString);
+
+        // Create and save the audit log
+        emailMessageExtractionAuditLog.setAction("Edit");
+        emailMessageExtractionAuditLog.setItemChanged("Number of Outages");
+        emailMessageExtractionAuditLog.setModifiedBy(editAttributesDTO.getModifiedBy());
+        emailMessageExtractionAuditLog.setModifiedDate(editAttributesDTO.getModifiedDate());
+        emailMessageExtractionAuditLog.setOldValue(oldValue);
+        emailMessageExtractionAuditLog.setNewValue(newValue);
+        emailMessageExtractionAuditLog.setEmailMessageExtractionId(email_message_extraction_id);
+        emailMessageExtractionAuditLogRepository.save(emailMessageExtractionAuditLog);
+
+        action[0] = true;
+    }
+}
+
